@@ -1,5 +1,11 @@
+use crate::{
+    block_producer::block_producer::{get_merkle_root, get_timestamp},
+    database::{insert_block, read_blocks::get_last_block_hash},
+    interface::{Block, BlockHeader},
+};
 use lmdb::{DatabaseFlags, Environment};
 use std::{fs, io, path::Path};
+use web3::signing::keccak256;
 
 /// Sets up the LMDB databases.
 ///
@@ -32,6 +38,29 @@ pub fn set_up_mldb() -> Result<(), Box<dyn std::error::Error>> {
     create_db(&env, "Index")?; // block indexes mapped to block hashes
     create_db(&env, "Validators")?;
 
+    // if last block is none, insert genesis block in the database
+    if let Ok(None) = get_last_block_hash() {
+        let last_block_hash = "GENESIS".to_string();
+        let block_number = 0;
+        // we need to get the timestamp
+        let timestamp = get_timestamp();
+        // we need to create the merkle root
+        let root = get_merkle_root(vec![]);
+        // we create the block header
+        let header = BlockHeader {
+            parent_block: last_block_hash,
+            block_number,
+            timestamp,
+            merkle_root: root,
+        };
+        let header_hash = hex::encode(keccak256(&header.to_bytes().unwrap()));
+        let block = Block {
+            header,
+            transactions: vec![],
+            hash: header_hash.clone(),
+        };
+        let _ = insert_block(header_hash, block_number, block);
+    }
     println!("Set up completed successfully.");
     Ok(())
 }

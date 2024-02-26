@@ -1,9 +1,8 @@
+pub mod connection;
+pub mod read;
 mod set_up;
-mod connection;
-mod write;
-mod read;
+pub mod write;
 
-pub use set_up::*;
-pub use connection::*;
-pub use write::*;
 pub use read::*;
+pub use set_up::*;
+pub use write::*;

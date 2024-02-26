@@ -1,7 +1,9 @@
+use std::clone;
+
 use crate::interface::finalized_transaction::Transaction;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BlockHeader {
     pub parent_block: String, // hash of the previous block
     pub block_number: u128,   // number of the block
@@ -9,7 +11,7 @@ pub struct BlockHeader {
     pub merkle_root: String,  // merkle root of the transactions
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, clone::Clone)]
 pub struct Block {
     pub header: BlockHeader,            // header of the block
     pub hash: String,                   // hash of the block

@@ -93,18 +93,18 @@ pub fn get_block_by_hash(block_hash: String) -> Result<Block, lmdb::Error> {
 // this function returns a block by its number
 pub fn get_block_by_number(block_number: u128) -> Result<Block, lmdb::Error> {
     //first we get the hash by getting the into the index table
-    println!("Getting block by number: {:?}", block_number);
+
+    // println!("Getting block by number: {:?}", block_number);
+
     let env = create_or_open_env().unwrap();
     let db = open_database(&env, Some("Index"))?;
     let txn = env.begin_ro_txn().unwrap();
     let binding = block_number.to_string();
     let key = binding.as_bytes();
-    println!("Index key: {:?}", &key);
     let value = txn.get(db, &key)?;
     let block_hash = String::from_utf8(value.to_vec()).unwrap();
     //then we get the block by getting the block by the hash
     let block = get_block_by_hash(block_hash);
-    println!("{:?}", block);
     Ok(block.unwrap())
 }
 

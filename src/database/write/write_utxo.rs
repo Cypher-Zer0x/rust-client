@@ -15,6 +15,6 @@ pub fn insert_utxo(utxo: UTXO) -> Result<(), lmdb::Error> {
         WriteFlags::empty(),
     )?;
     txn.commit()?;
-    println!("UTXO written successfully.");
+    // println!("UTXO written successfully.");
     Ok(())
 }

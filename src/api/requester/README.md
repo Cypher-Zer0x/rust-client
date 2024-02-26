@@ -1,0 +1,1 @@
+contains all the functions to query the other nodes apis

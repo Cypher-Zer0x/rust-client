@@ -18,7 +18,7 @@ pub fn insert_user_deposit_mempool(event: UserDepositEvent) -> Result<(), lmdb::
         WriteFlags::empty(),
     )?;
     txn.commit()?;
-    println!("Deposit written successfully.");
+    // println!("Deposit written successfully.");
     Ok(())
 }
 
@@ -30,7 +30,7 @@ pub fn delete_transaction_from_mempool(hash: String) -> Result<(), lmdb::Error> 
     let mut txn = binding_env.begin_rw_txn()?;
     txn.del(db, &hash.as_bytes(), None)?;
     txn.commit()?;
-    println!("Transaction deleted successfully.");
+    // println!("Transaction deleted successfully.");
     Ok(())
 }
 
@@ -46,6 +46,6 @@ pub fn insert_transaction_in_mempool(tx: PendingTransaction) -> Result<(), lmdb:
         WriteFlags::empty(),
     )?;
     txn.commit()?;
-    println!("Transaction written successfully.");
+    // println!("Transaction written successfully.");
     Ok(())
 }

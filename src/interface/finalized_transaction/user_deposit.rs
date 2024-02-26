@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserDepositTx {
-    pub sender: String, // Ethereum address of the depositor
+    pub txId: String, // deposit tx hash from the network used to deposit the funds
     pub output: String, // hash of the UTXO, not a vec because only one output
     pub hash: String,   // hash of the transaction
 }
@@ -20,7 +20,7 @@ impl UserDepositTx {
 
     pub fn from_pending_user_deposit_tx(tx: PendingUserDepositTx) -> UserDepositTx {
         UserDepositTx {
-            sender: tx.sender,
+            txId: tx.txId,
             hash: tx.hash,
             output: tx.output.get_hash(),
         }

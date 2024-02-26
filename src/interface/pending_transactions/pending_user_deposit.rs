@@ -4,7 +4,7 @@ use web3::signing::keccak256;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserDepositEvent {
-    pub sender: String,          // Ethereum address of the depositor
+    pub txId: String,          // deposit tx hash from the network used to deposit the funds
     pub amount: String,          // Amount deposited in wei
     pub currency: String,        // the currency
     pub root_block_number: u64,  // Root block number of the deposit
@@ -15,7 +15,7 @@ pub struct UserDepositEvent {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PendingUserDepositTx {
-    pub sender: String, // Ethereum address of the depositor
+    pub txId: String, // Ethereum address of the depositor
     pub output: UTXO,   // hash of the UTXO
     pub hash: String,   // hash of the transaction
 }
@@ -35,7 +35,8 @@ impl PendingUserDepositTx {
         ));
         let bytes_output = output.to_bytes();
         PendingUserDepositTx {
-            sender: event.sender,
+
+            txId: event.txId,
             hash: hex::encode(keccak256(&bytes_output)).to_string(),
             output,
         }

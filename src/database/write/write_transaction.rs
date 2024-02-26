@@ -16,5 +16,8 @@ pub fn insert_user_deposit_tx(user_deposit_tx: UserDepositTx) -> Result<(), lmdb
         WriteFlags::empty(),
     )?;
     txn.commit()?;
+
+    // println!("Deposit written successfully.");
+
     Ok(())
 }
