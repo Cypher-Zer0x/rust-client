@@ -1,4 +1,5 @@
 /target
+.vscode
 .env
 cargo.lock
 cargo.toml
