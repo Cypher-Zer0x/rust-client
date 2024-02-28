@@ -293,4 +293,14 @@ pub fn from_bytes(bytes: &[u8]) -> Result<UTXO, Box<dyn std::error::Error>> {
             _ => "".to_string(), // Return None or handle as appropriate for other variants
         }
     }
+
+    pub fn get_commitment(&self) -> String {
+        match self {
+            UTXO::Coinbase(utxo) => utxo.commitment.clone(),
+            UTXO::Payment(utxo) => utxo.commitment.clone(),
+            UTXO::Exit(utxo) => utxo.commitment.clone(),
+            // Handle other variants as needed...
+            _ => "".to_string(), // Return None or handle as appropriate for other variants
+        }
+    }
 }

@@ -17,12 +17,12 @@ pub async fn handle_user_ringct(
     };
     // we check if the input exists in the database
     // and store the UTXO in a vector
-    let mut inputs_utxo: Vec<UTXO> = Vec::new();
+    let mut inputs_utxo: Vec<String> = Vec::new();
     for input in tx.inputs.clone() {
         match get_utxo_by_hash(input) {
             Ok(utxo) => {
                 // println!("UTXO found {:?}", utxo);
-                inputs_utxo.push(utxo);
+                inputs_utxo.push(utxo.get_commitment());
             }
             Err(e) => {
 
