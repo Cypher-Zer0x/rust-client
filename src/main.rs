@@ -51,7 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // first we try to sync with the network
     let validator: Vec<Validator> = [
         Validator {
-            node: Node {ip:"176.146.201.74".to_string(),port:"3000".to_string(), status: "".to_string() },
+            node: Node {ip:"176.146.201.74".to_string(),port:"8000".to_string(), status: "".to_string() },
             pubkey: "".to_string(),
             last_block_hash: "".to_string(),
             last_block_number: 0,
@@ -60,8 +60,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _ = insert_validator(validator);
     let _ = sync_with_network().await?;
     print!("synced with network");
-    // let _ = get_block_range("127.0.0.1:3000".to_string(), 0, 10).await.unwrap();
-    // let _ = get_blocks::get_blocks( "127.0.0.1:3000".to_string(),0 , 50, 10).await?;
+    // let _ = get_block_range("127.0.0.1:8000".to_string(), 0, 10).await.unwrap();
+    // let _ = get_blocks::get_blocks( "127.0.0.1:8000".to_string(),0 , 50, 10).await?;
 
     // Spawn the listener in a separate async task
     tokio::spawn(async move {
@@ -108,7 +108,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             /* ----------------------USER OPERATION ENDPOINTS---------------------- */
             .route("/ringct", post(handle_user_ringct));
 
-        let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+        let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
         println!("API server listening on {}", addr);
 
         // Spawn the block producer in a separate async task
