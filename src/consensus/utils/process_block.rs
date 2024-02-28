@@ -1,5 +1,7 @@
 use crate::{
-    api::requester::get_utxo_by_hash::get_utxo_by_hash, database::{insert_block, insert_user_deposit_tx, insert_utxo}, interface::{Block, Transaction, UserDepositTx, UTXO}
+    api::requester::get_utxo_by_hash::get_utxo_by_hash,
+    database::{insert_block, insert_user_deposit_tx, insert_utxo},
+    interface::{Block, Transaction, UserDepositTx, UTXO},
 };
 use web3::signing::keccak256;
 
@@ -24,7 +26,9 @@ pub async fn process_block(node_url: String, block: Block) -> Result<(), lmdb::E
             Transaction::UserDeposit(user_deposit_tx) => {
                 let _ = insert_user_deposit_tx(user_deposit_tx.clone());
                 // get utxo from validator api
-                let output = get_utxo_by_hash(node_url.clone(), user_deposit_tx.output).await.unwrap();
+                let output = get_utxo_by_hash(node_url.clone(), user_deposit_tx.output)
+                    .await
+                    .unwrap();
                 let _ = insert_utxo(output);
             }
             Transaction::RingCT(ring) => {

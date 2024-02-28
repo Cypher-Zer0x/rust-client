@@ -21,6 +21,6 @@ pub async fn get_mempool(node_url: String) -> Result<Vec<PendingTransaction>, re
                 //TODO HANDLE THE ERROR PROPERLY
                 Ok(vec![])
             }
-        },
+        }
     }
 }

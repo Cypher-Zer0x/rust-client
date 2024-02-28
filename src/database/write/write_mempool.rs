@@ -4,8 +4,8 @@ use lmdb::Transaction as LmdbTransaction;
 use lmdb::WriteFlags;
 
 // this function inserts a user deposit transaction into the mempool
-pub fn insert_user_deposit_mempool(event: UserDepositEvent) -> Result<(), lmdb::Error> {
-    let user_deposit_tx = PendingUserDepositTx::from_user_deposit_event(event);
+pub async fn insert_user_deposit_mempool(event: UserDepositEvent) -> Result<(), lmdb::Error> {
+    let user_deposit_tx = PendingUserDepositTx::from_user_deposit_event(event).await.unwrap();
     let tx = PendingTransaction::from_user_deposit_tx(user_deposit_tx.clone());
     let env = connection::create_or_open_env().unwrap();
     let db = connection::open_database(&env, Some("Mempool"))?;

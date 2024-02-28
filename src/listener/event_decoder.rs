@@ -33,7 +33,6 @@ pub fn decode_eth_deposit_created_event(log: &Log) -> Result<UserDepositEvent, E
 
     // println!("tokens: {:?}", tokens);
 
-
     // Extract decoded values
     let owner = match &tokens[0] {
         Token::Address(addr) => *addr,
@@ -138,9 +137,7 @@ pub fn decode_validator_added(log: &Log) -> Result<ValidatorAddedEvent, Error> {
     let param_type = vec![ParamType::Address, ParamType::String, ParamType::Uint(256)];
     let tokens = ethabi::decode(&param_type, &log.data.0)?;
 
-
     // println!("tokens: {:?}", tokens);
-
 
     let owner = match &tokens[0] {
         Token::Address(addr) => *addr,
@@ -182,7 +179,6 @@ pub fn decode_validator_exit_request(log: &Log) -> Result<ValidatorExitRequestEv
     let tokens = ethabi::decode(&param_type, &log.data.0)?;
 
     // println!("tokens: {:?}", tokens);
-
 
     let owner = match &tokens[0] {
         Token::Address(addr) => *addr,
@@ -227,7 +223,6 @@ pub fn decode_exit_claimed(log: &Log) -> Result<ExitClaimedEvent, Error> {
     let tokens = ethabi::decode(&param_type, &log.data.0)?;
 
     // println!("tokens: {:?}", tokens);
-
 
     let owner = match &tokens[0] {
         Token::Address(addr) => *addr,

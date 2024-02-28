@@ -25,7 +25,6 @@ pub async fn handle_user_ringct(
                 inputs_utxo.push(utxo.get_commitment());
             }
             Err(e) => {
-
                 // println!("UTXO not found {:?}", e);
 
                 return Err(StatusCode::BAD_REQUEST);

@@ -1,6 +1,6 @@
 use crate::database::read_blocks::get_number_of_block;
-use crate::database::read_utxo::get_number_UTXO;
 use crate::database::read_transaction::get_number_tx;
+use crate::database::read_utxo::get_number_UTXO;
 use crate::interface::blockchain_metrics::blockchain_metrics::BlockchainMetrics;
 use axum::response::Response;
 use axum::{
@@ -8,7 +8,6 @@ use axum::{
     http::{header::ACCESS_CONTROL_ALLOW_ORIGIN, StatusCode},
     response::Json,
 };
-
 
 use serde_json;
 use std::convert::Infallible;
@@ -41,5 +40,3 @@ pub async fn async_get_blockchain_metrics() -> Result<Response, Infallible> {
             .unwrap()), // Consider handling this Result in production code
     }
 }
-
-

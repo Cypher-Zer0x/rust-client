@@ -15,7 +15,8 @@ use api::get::block_data::{
 use api::get::blockchain_metrics::async_get_blockchain_metrics;
 use api::get::mempool_data::async_get_mempool_data;
 use api::get::transactions_data::{
-    async_get_number_tx, async_get_transaction_data, async_get_transaction_data_by_hash,async_get_latest_ten_tx
+    async_get_latest_ten_tx, async_get_number_tx, async_get_transaction_data,
+    async_get_transaction_data_by_hash,
 };
 use api::get::utxo_data::{async_get_utxo_data, async_get_utxo_data_by_hash};
 use api::post::user_operation::handle_user_ringct;
@@ -41,7 +42,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // todo: at start up, check database integrity (at least if all block indexes are here and utxo merkle root fit the one saved)
     dotenv().ok();
 
-
     // Setup database
     database::set_up_mldb()?;
     let node_url = env::var("WSS_PROVIDER").expect("WSS_PROVIDER not set");
@@ -49,14 +49,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let notify = Arc::new(Notify::new());
 
     // first we try to sync with the network
-    let validator: Vec<Validator> = [
-        Validator {
-            node: Node {ip:"176.146.201.74".to_string(),port:"8000".to_string(), status: "".to_string() },
-            pubkey: "".to_string(),
-            last_block_hash: "".to_string(),
-            last_block_number: 0,
-        }
-    ].to_vec();
+    let validator: Vec<Validator> = [Validator {
+        node: Node {
+            ip: "176.146.201.74".to_string(),
+            port: "8000".to_string(),
+            status: "".to_string(),
+        },
+        pubkey: "".to_string(),
+        last_block_hash: "".to_string(),
+        last_block_number: 0,
+    }]
+    .to_vec();
     let _ = insert_validator(validator);
     let _ = sync_with_network().await?;
     print!("synced with network");
@@ -75,7 +78,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Spawn the API server in a separate async task
     tokio::spawn(async {
         let app = Router::new()
-            /* ----------------------METRICS ENDPOINTS----------------- */ 
+            /* ----------------------METRICS ENDPOINTS----------------- */
             .route("/metrics", get(async_get_blockchain_metrics))
             /* ----------------------TX ENDPOINTS---------------------- */
             .route("/mempool", get(async_get_mempool_data))
@@ -90,18 +93,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .route("/transaction/latest-ten", get(async_get_latest_ten_tx))
             /* ----------------------BLOCK ENDPOINTS---------------------- */
             .route("/block/all", get(async_get_blocks_data)) // todo: add range mechanism or at some point it will be too slow and inefficient for the client and the requester
-            .route(
-                "/block/hash/:block_hash",
-                get(async_get_block_by_hash_data),
-            )
+            .route("/block/hash/:block_hash", get(async_get_block_by_hash_data))
             .route(
                 "/block/number/:block_number",
                 get(async_get_block_by_number_data),
             )
-            .route(
-                "/block/range/:rangeData",
-                get(async_get_blocks_range_data),
-            )
+            .route("/block/range/:rangeData", get(async_get_blocks_range_data))
             .route("/block/latest", get(async_get_last_block_data))
             .route("/block/latest-ten", get(async_get_last_ten_blocks_data))
             .route("/block/total-number", get(async_get_number_block))

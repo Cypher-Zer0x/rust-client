@@ -1,13 +1,11 @@
+use crate::api::requester::get_last_block::get_last_block;
+use crate::block_producer::block_producer::process_transaction;
 use crate::consensus::utils::process_block::process_block;
 use crate::consensus::utils::process_mempool::process_mempool;
 use crate::database::read_validators::get_validators;
 use crate::database::{self, delete_blocks};
 use crate::interface::nodes::{Node, Validator};
 use crate::interface::Block;
-use crate::api::requester::get_last_block::get_last_block;
-use crate::{
-    block_producer::block_producer::process_transaction,
-};
 
 use crate::consensus::utils::get_blocks::get_blocks;
 
@@ -37,7 +35,7 @@ pub async fn sync_with_network() -> Result<(), lmdb::Error> {
         last_block_number: 0,
     }]
     .to_vec(); // get_validators().unwrap();
-    // println!("validators: {:?}", validators);
+               // println!("validators: {:?}", validators);
 
     if validators.len() == 0 {
         println!("No validators found. Starting the blockchain from genesis");
@@ -94,7 +92,10 @@ pub async fn sync_with_network() -> Result<(), lmdb::Error> {
 
     // ask for batches of 100 blocks
     let mut tries = 0;
-    println!("local_last_block_number before loop: {:?}", local_last_block_number);
+    println!(
+        "local_last_block_number before loop: {:?}",
+        local_last_block_number
+    );
     loop {
         // sync the blockchain
         let blocks = get_blocks(
@@ -110,11 +111,13 @@ pub async fn sync_with_network() -> Result<(), lmdb::Error> {
             for block in blocks.unwrap() {
                 // todo: verify block validity
 
-
                 // check if the block number is the next one in the local blockchain
                 local_last_block_number += 1;
                 if local_last_block_number != block.header.block_number {
-                    println!("Block number mismatch. Expected: {}, got: {}", local_last_block_number, block.header.block_number);
+                    println!(
+                        "Block number mismatch. Expected: {}, got: {}",
+                        local_last_block_number, block.header.block_number
+                    );
                     break;
                 }
 

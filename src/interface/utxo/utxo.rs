@@ -249,31 +249,30 @@ pub enum UTXO {
 
 impl UTXO {
     // Serialization including a prefix
-pub fn to_bytes(&self) -> Vec<u8> {
-    let mut bytes = Vec::new();
-    match self {
-        UTXO::Payment(_) => bytes.push(0),
-        UTXO::Exit(_) => bytes.push(1),
-        UTXO::Coinbase(_) => bytes.push(2),
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        match self {
+            UTXO::Payment(_) => bytes.push(0),
+            UTXO::Exit(_) => bytes.push(1),
+            UTXO::Coinbase(_) => bytes.push(2),
+        }
+        bytes.extend(bincode::serialize(self).unwrap());
+        bytes
     }
-    bytes.extend(bincode::serialize(self).unwrap());
-    bytes
-}
 
-// Deserialization using the prefix
-pub fn from_bytes(bytes: &[u8]) -> Result<UTXO, Box<dyn std::error::Error>> {
-    let (variant, data) = bytes.split_first().ok_or("Empty bytes array")?;
-    println!("variant: {:?}", variant);
-    let utxo = match variant {
-        0 => bincode::deserialize::<UTXO>(data)?,
-        1 => bincode::deserialize::<UTXO>(data)?,
-        2 => bincode::deserialize::<UTXO>(data)?,
-        _ => return Err("Unknown UTXO variant".into()),
-    };
-    Ok(utxo)
-}
+    // Deserialization using the prefix
+    pub fn from_bytes(bytes: &[u8]) -> Result<UTXO, Box<dyn std::error::Error>> {
+        let (variant, data) = bytes.split_first().ok_or("Empty bytes array")?;
+        println!("variant: {:?}", variant);
+        let utxo = match variant {
+            0 => bincode::deserialize::<UTXO>(data)?,
+            1 => bincode::deserialize::<UTXO>(data)?,
+            2 => bincode::deserialize::<UTXO>(data)?,
+            _ => return Err("Unknown UTXO variant".into()),
+        };
+        Ok(utxo)
+    }
 
-    
     pub fn hash(&self) -> Option<&str> {
         match self {
             UTXO::Coinbase(utxo) => Some(&utxo.hash),

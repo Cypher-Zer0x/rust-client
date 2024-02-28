@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserDepositTx {
-    pub txId: String, // deposit tx hash from the network used to deposit the funds
+    pub txId: String,   // deposit tx hash from the network used to deposit the funds
     pub output: String, // hash of the UTXO, not a vec because only one output
     pub hash: String,   // hash of the transaction
 }

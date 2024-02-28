@@ -55,14 +55,14 @@ pub fn get_latest_transactions() -> Result<Vec<Transaction>, lmdb::Error> {
     let last_block = get_last_block_number().unwrap(); // Assume you have a function to retrieve the latest block number from the "Blocks" database
     let mut txns = Vec::new();
     let mut i = 0;
-    while (txns.len() < 10 || i<100) {
+    while (txns.len() < 10 || i < 100) {
         if last_block.unwrap() - i == 0 {
             break;
         }
-        let block_number = last_block.unwrap() -i;
+        let block_number = last_block.unwrap() - i;
         // Get the transactions from the "Transactions" database for this block
         let block_transactions = match get_block_by_number(block_number) {
-            Ok(txns) => txns, // If there are transactions in the block, return them
+            Ok(txns) => txns,   // If there are transactions in the block, return them
             Err(_) => continue, // Otherwise, skip to the next iteration and check the previous block (if any)
         };
         txns.extend(block_transactions.transactions.into_iter());
@@ -70,4 +70,3 @@ pub fn get_latest_transactions() -> Result<Vec<Transaction>, lmdb::Error> {
     }
     Ok(txns)
 }
-

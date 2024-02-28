@@ -1,9 +1,13 @@
 use web3::transports::batch;
 
 use crate::{
-    api::{get::block_data::get_block_by_number_data, requester::{get_block_by_index::get_block_by_index}},
+    api::{
+        get::block_data::get_block_by_number_data,
+        requester::get_block_by_index::get_block_by_index,
+    },
     block_producer::block_producer::process_transaction,
-    database::read::read_validators::get_validators, interface::Block,
+    database::read::read_validators::get_validators,
+    interface::Block,
 };
 
 // returns Vec<Block>
@@ -13,9 +17,13 @@ pub async fn get_blocks(
     max_block_number: u128,
     batch_size: u32,
 ) -> Result<Vec<Block>, reqwest::Error> {
-
     if start_block_number == max_block_number {
-        return Ok(vec![get_block_by_index(validator_url, start_block_number as u128).await.unwrap()]);
+        return Ok(vec![get_block_by_index(
+            validator_url,
+            start_block_number as u128,
+        )
+        .await
+        .unwrap()]);
     }
     // todo: handle batch_size = 0 and tother arg values
 
@@ -23,7 +31,7 @@ pub async fn get_blocks(
     let mut api_calls: u128 = 0;
     // println!("max_block_number: {:?}", max_block_number);
     // println!("start_block_number: {:?}", start_block_number);
-    
+
     if max_block_number - start_block_number > batch_size as u128
         && ((max_block_number - start_block_number) % batch_size as u128 != 0)
     {
@@ -47,7 +55,7 @@ pub async fn get_blocks(
         }
 
         loop {
-			// println!("ssssssssssssssssssssssssssss");
+            // println!("ssssssssssssssssssssssssssss");
             // call api to get blocks
             let blocks_batch = crate::api::requester::get_block_range::get_block_range(
                 validator_url.clone(),
@@ -55,7 +63,7 @@ pub async fn get_blocks(
                 end_block as u32,
             )
             .await;
-			println!("blocks_batch: {:?}", blocks_batch);
+            println!("blocks_batch: {:?}", blocks_batch);
             if blocks_batch.is_ok() {
                 let blocks_batch = blocks_batch.unwrap();
                 let blocks_batch = serde_json::from_str::<Vec<Block>>(&blocks_batch).unwrap();
