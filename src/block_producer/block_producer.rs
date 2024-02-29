@@ -1,6 +1,8 @@
 use crate::database::insert_ring_ct;
 use crate::interface;
-use crate::interface::{block::Block, block::BlockHeader, finalized_transaction::Transaction, ringCTx};
+use crate::interface::{
+    block::Block, block::BlockHeader, finalized_transaction::Transaction, ringCTx,
+};
 use crate::{
     database::{
         read_blocks::{get_last_block_hash, get_last_block_number},

@@ -1,8 +1,8 @@
 use crate::database::connection;
 use crate::interface::block::Block;
+use chrono::{TimeZone, Utc};
 use lmdb::Transaction as LmdbTransaction;
 use lmdb::WriteFlags;
-use chrono::{TimeZone, Utc};
 
 pub fn insert_block(
     block_hash: String,

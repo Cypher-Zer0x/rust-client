@@ -7,7 +7,7 @@ pub struct PendingRingCT {
     pub outputs: Vec<PaymentUTXO>,
     pub hash: String,      // hash of the hash of the transaction
     pub signature: String, // signature of the transaction
-    pub fee : String // fee of the transaction 
+    pub fee: String,       // fee of the transaction
 }
 
 impl PendingRingCT {

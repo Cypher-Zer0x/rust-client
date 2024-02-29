@@ -32,7 +32,7 @@ impl EthListener {
             .build();
         let sub = self.web3.eth_subscribe().subscribe_logs(filter).await?;
         println!("Listening for events...");
-    
+
         sub.for_each_concurrent(None, |log| async move {
             match log {
                 Ok(log) => {
@@ -44,7 +44,7 @@ impl EthListener {
             }
         })
         .await;
-    
+
         Ok(())
     }
     async fn handle_event(&self, log: &Log) {
@@ -54,7 +54,9 @@ impl EthListener {
         match event_signature_str {
             ref s if *s == EventSignature::DepositCreatedSignature.value() => {
                 let event = decode_eth_deposit_created_event(&log);
-                write_mempool::insert_user_deposit_mempool(event.unwrap()).await.unwrap();
+                write_mempool::insert_user_deposit_mempool(event.unwrap())
+                    .await
+                    .unwrap();
                 println!("Deposit tx in the mempool");
             }
             ref s if *s == EventSignature::ExitRequestEventSignature.value() => {

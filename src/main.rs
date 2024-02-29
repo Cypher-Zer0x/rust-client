@@ -104,10 +104,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .route("/block/total-number", get(async_get_number_block))
             /* ----------------------USER OPERATION ENDPOINTS---------------------- */
             .route("/ringct", post(handle_user_ringct));
-
         let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
         println!("API server listening on {}", addr);
-
         // Spawn the block producer in a separate async task
         tokio::spawn(async {
             loop {

@@ -22,7 +22,9 @@ pub struct PendingUserDepositTx {
 }
 
 impl PendingUserDepositTx {
-    pub async fn from_user_deposit_event(event: UserDepositEvent) -> Result<PendingUserDepositTx, Box<dyn std::error::Error>> {
+    pub async fn from_user_deposit_event(
+        event: UserDepositEvent,
+    ) -> Result<PendingUserDepositTx, Box<dyn std::error::Error>> {
         let client = reqwest::Client::new();
         let res = client
             .post("http://127.0.0.1:3001/api/generateCommitment")
@@ -30,7 +32,7 @@ impl PendingUserDepositTx {
             .json(&serde_json::json!({ "amount": event.amount }))
             .send()
             .await?;
-        
+
         if res.status().is_success() {
             let verify_response = res.json::<Value>().await?;
             if let Some(commitment) = verify_response["commitment"].as_str() {
@@ -48,7 +50,7 @@ impl PendingUserDepositTx {
                 let bytes_output = output.to_bytes(); // Assuming this method exists and works as expected
                 return Ok(PendingUserDepositTx {
                     txId: event.txId,
-                    hash:  hex::encode(keccak256(&bytes_output)).to_string(),
+                    hash: hex::encode(keccak256(&bytes_output)).to_string(),
                     output,
                 });
             }
@@ -56,17 +58,14 @@ impl PendingUserDepositTx {
         Err("Failed to process deposit event".into())
     }
 
-            pub fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-                let encoded = bincode::serialize(&self)?;
-                Ok(encoded)
-            }
-            pub fn from_bytes(
-                bytes: &[u8],
-            ) -> Result<PendingUserDepositTx, Box<dyn std::error::Error>> {
-                let tx: PendingUserDepositTx = bincode::deserialize(bytes)?;
-                Ok(tx)
-            }
-        }
-
+    pub fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let encoded = bincode::serialize(&self)?;
+        Ok(encoded)
+    }
+    pub fn from_bytes(bytes: &[u8]) -> Result<PendingUserDepositTx, Box<dyn std::error::Error>> {
+        let tx: PendingUserDepositTx = bincode::deserialize(bytes)?;
+        Ok(tx)
+    }
+}
 
 //G*hash(clef publique view)*r(alaeatoire connu par envoyeur)+clef publique spend

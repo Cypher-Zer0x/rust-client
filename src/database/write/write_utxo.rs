@@ -30,7 +30,7 @@ pub fn insert_utxo(utxo: UTXO) -> Result<(), lmdb::Error> {
 //         &utxo.get_hash().as_bytes(),
 //         &utxo.to_bytes(),
 //         WriteFlags::empty(),
-//     )?; 
+//     )?;
 //     txn.commit()?;
 //     // println!("UTXO written successfully.");
 //     Ok(())

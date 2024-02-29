@@ -19,7 +19,6 @@ impl ringCTx {
         Ok(tx)
     }
     pub fn from_pending_ringCTx(tx: PendingRingCT) -> ringCTx {
-
         let outputs: Vec<String> = tx.outputs.iter().map(|x| x.hash.clone()).collect();
 
         ringCTx {

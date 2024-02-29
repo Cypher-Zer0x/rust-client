@@ -4,7 +4,7 @@ use web3::signing::keccak256;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, Default, PartialOrd, Ord)]
 pub struct PaymentUTXO {
-    pub version: String,          // hex version number of the transaction
+    pub version: String,             // hex version number of the transaction
     pub transaction_hash: String, // hash of the transaction where this UTXO was output, coinbase transactions have a hash of 0
     pub output_index: u64,        // index number of the output in the transaction
     pub public_key: String, // (compressed point) -> a one-time public key generated for this transaction output
@@ -18,7 +18,7 @@ pub struct PaymentUTXO {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, Default, PartialOrd, Ord)]
 struct TempPaymentUTXO {
-    pub version: String,          // hex version number of the transaction
+    pub version: String,             // hex version number of the transaction
     pub transaction_hash: String, // hash of the transaction where this UTXO was output, coinbase transactions have a hash of 0
     pub output_index: u64,        // index number of the output in the transaction
     pub public_key: String, // (compressed point) -> a one-time public key generated for this transaction output

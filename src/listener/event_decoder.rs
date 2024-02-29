@@ -2,9 +2,9 @@ use crate::interface::{
     ExitClaimedEvent, ExitRequestEvent, UserDepositEvent, ValidatorAddedEvent,
     ValidatorExitRequestEvent,
 };
+use keccak_hash::H256;
 use std::any::Any;
 use std::vec;
-use keccak_hash::H256;
 use web3::ethabi::{self, Error, ParamType, Token};
 use web3::types::Log;
 
@@ -40,13 +40,6 @@ pub fn decode_eth_deposit_created_event(log: &Log) -> Result<UserDepositEvent, E
     // Decode the data part of the log
     let tokens = ethabi::decode(&param_types, &log.data.0)?;
 
-    // println!("tokens: {:?}", tokens);
-
-    // Extract decoded values
-    let owner = match &tokens[0] {
-        Token::Address(addr) => *addr,
-        _ => return Err(Error::InvalidData),
-    };
     let amount = match &tokens[1] {
         Token::Uint(u) => *u,
         _ => return Err(Error::InvalidData),
