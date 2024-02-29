@@ -31,11 +31,11 @@ use axum::{routing::get, routing::post, Router}; // Ensure this is correctly imp
 use axum_server::Server;
 use database::write::write_validator::insert_validator;
 use dotenv::dotenv;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
 use std::net::SocketAddr;
 use std::sync::Arc;
-use serde::{Deserialize, Serialize};
 use tokio::sync::Notify;
 use tokio::time::Duration; // Add missing import statement
 
@@ -51,7 +51,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // todo: at start up, check database integrity (at least if all block indexes are here and utxo merkle root fit the one saved)
     dotenv().ok();
     let config_data = fs::read_to_string("network.json").expect("Unable to read network.json");
-    let networks: Vec<NetworkConfig> = serde_json::from_str(&config_data).expect("Error parsing JSON");
+    let networks: Vec<NetworkConfig> =
+        serde_json::from_str(&config_data).expect("Error parsing JSON");
     println!("{:?}", networks);
     // Setup database
     database::set_up_mldb()?;

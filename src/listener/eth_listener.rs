@@ -1,3 +1,6 @@
+use chrono::{TimeZone, Utc};
+use std::time::SystemTime;
+
 use super::event_decoder::{
     decode_eth_deposit_created_event, decode_exit_claimed, decode_exit_request,
     decode_validator_added, decode_validator_exit_request,
@@ -11,6 +14,13 @@ use web3::{
     Web3,
 };
 
+fn get_timestamp() -> u128 {
+    let start = SystemTime::now();
+    let since_the_epoch = start
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .expect("Time went backwards");
+    since_the_epoch.as_millis()
+}
 pub struct EthListener {
     web3: Web3<WebSocket>,
     contract_address: Address,
@@ -59,7 +69,15 @@ impl EthListener {
                 write_mempool::insert_user_deposit_mempool(event.unwrap())
                     .await
                     .unwrap();
-                println!("Deposit tx in the mempool");
+                let datetime = Utc.timestamp(get_timestamp() as i64 / 1000, 0);
+                // Format the DateTime<Utc> to a string (optional)
+                let date_string = datetime.format("%Y-%m-%d %H:%M:%S").to_string();
+                println!(
+                    "<{:?}>\tNew Deposit: hash={:?}\t Chain Id: {:?}",
+                    date_string,
+                    &log.transaction_hash.unwrap().to_string(),
+                    self.chain_id,
+                );
             }
             ref s if *s == EventSignature::ExitRequestEventSignature.value() => {
                 // Extraction and handling for validator exit request event goes here.
