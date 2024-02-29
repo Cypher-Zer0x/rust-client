@@ -25,6 +25,29 @@ pub async fn handle_user_ringct(
     };
     // we check if the input exists in the database
     // and store the UTXO in a vector
+    /* 
+    if tx.inputs.len() == 0{
+        return Ok(Response::builder()
+        .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(Body::from("Internal Server Error"))
+        .unwrap());
+    }
+    if tx.outputs.len() == 0{
+        return Ok(Response::builder()
+        .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(Body::from("Internal Server Error"))
+        .unwrap());
+    }
+    if tx.signature == ""{
+        return Ok(Response::builder()
+        .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(Body::from("Internal Server Error"))
+        .unwrap());
+    }
+    */
     let mut inputs_utxo: Vec<String> = Vec::new();
     for input in tx.inputs.clone() {
         match get_utxo_by_hash(input) {
