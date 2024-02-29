@@ -14,6 +14,7 @@ pub async fn handle_user_ringct(
         outputs: payload.outputs.clone(),
         hash: payload.hash.clone(),
         signature: payload.signature.clone(),
+        fee: payload.fee.clone(),
     };
     // we check if the input exists in the database
     // and store the UTXO in a vector
