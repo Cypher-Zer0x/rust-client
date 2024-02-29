@@ -4,7 +4,7 @@ use crate::{
 
 pub async fn process_mempool(node_url: String) -> Result<(), lmdb::Error> {
     // get the mempool from contact node
-    let mempool = get_mempool(node_url.clone()).await.unwrap();
+    let mempool = vec![];// get_mempool(node_url.clone()).await.unwrap(); // TODO: fix
 
     // save the mempool in the database
     for tx in mempool {

@@ -1,3 +1,4 @@
+use crate::database::read_mempool::get_mempool;
 use crate::database::read_utxo::get_utxo_by_hash;
 use crate::database::write_mempool::insert_transaction_in_mempool;
 use crate::interface::{PendingRingCT, PendingTransaction, VerifyTx, UTXO};
@@ -13,6 +14,7 @@ pub async fn handle_user_ringct(
     payload: Json<PendingRingCT>,
 ) -> Result<Response,Infallible> {
     //println!("Received a ringCT transaction {:?}", payload);
+    // println!("mempool before: {:?}", get_mempool().unwrap());
 
     let tx = PendingRingCT {
         inputs: payload.inputs.clone(),
@@ -54,6 +56,8 @@ pub async fn handle_user_ringct(
         .json(&verify_tx)
         .send()
         .await;
+    // println!("verify_tx after ts call: {:?}", res);
+
     // if the isValid field is false, we return an error
     if let Ok(res) = res {
         if res.status().is_success() {
@@ -98,7 +102,6 @@ pub async fn handle_user_ringct(
         .body(Body::from("Internal Server Error"))
         .unwrap());
     }
-
     // if the signature is valid, we send the transaction to the mempool
     match insert_transaction_in_mempool(PendingTransaction::PendingRingCTx(tx.clone())) {
         Ok(_) => {
@@ -106,6 +109,7 @@ pub async fn handle_user_ringct(
                 "status": "success",
                 "message": "Handled ringCT transaction"
             });
+            // println!("mempool after: {:?}", get_mempool().unwrap());
             
             // Correctly construct the JSON response
             Ok(Response::builder()
@@ -123,4 +127,5 @@ pub async fn handle_user_ringct(
                 .unwrap()) // Again, consider a more graceful error handling
         }
     }
+
 }

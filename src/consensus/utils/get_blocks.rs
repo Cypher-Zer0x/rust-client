@@ -32,11 +32,11 @@ pub async fn get_blocks(
     // println!("max_block_number: {:?}", max_block_number);
     // println!("start_block_number: {:?}", start_block_number);
 
-    if max_block_number - start_block_number > batch_size as u128
+    if max_block_number > batch_size as u128 + start_block_number
         && ((max_block_number - start_block_number) % batch_size as u128 != 0)
     {
         api_calls = (max_block_number - start_block_number) / batch_size as u128;
-    } else if max_block_number - start_block_number > batch_size as u128 {
+    } else if max_block_number > batch_size as u128 + start_block_number {
         api_calls = ((max_block_number - start_block_number) / batch_size as u128) + 1;
     } else {
         api_calls = 1;
@@ -81,7 +81,6 @@ pub async fn get_blocks(
             }
         }
     }
-
     // println!("blocks: {:?}", blocks);
 
     return Ok(blocks);

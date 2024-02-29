@@ -1,3 +1,5 @@
+use crate::database::insert_ring_ct;
+use crate::interface;
 use crate::interface::{block::Block, block::BlockHeader, finalized_transaction::Transaction, ringCTx};
 use crate::{
     database::{
@@ -17,6 +19,7 @@ use web3::signing::keccak256;
 // this function processes the transactions in the mempool and creates a block
 pub fn process_transaction() -> Result<(), lmdb::Error> {
     let pending_txs = get_mempool().unwrap();
+    // println!("pending_txs: {:?}", pending_txs);
     let mut finalized_txs: Vec<Transaction> = vec![];
     let mut hashes: Vec<String> = vec![];
     for tx in pending_txs {
@@ -37,12 +40,23 @@ pub fn process_transaction() -> Result<(), lmdb::Error> {
                 // add the hash to the hashes vector
                 hashes.push(deposit_tx.hash);
             }
-            PendingTransaction::PendingRingCTx(ring) => {
+            PendingTransaction::PendingRingCTx(ringCT) => {
                 // we check if the input are in the database,
                 // if so we send a request to the node service to verify the validity of the signature and of the CT
-                //let _ = insert_utxo(ring.clone().outputs);
-                //let finalized_transaction : Ring = ring.clone().to_finalized_transaction();
+                // insert all utxos in the database
+                for output in ringCT.outputs.clone() {
+                    let _ = insert_utxo(interface::utxo::utxo::UTXO::Payment(output.clone()));
+                }
+                // then add the tx to the transaction database, and to the vector of finalized txs
+                let finalized_transaction: ringCTx = ringCTx::from_pending_ringCTx(ringCT.clone());
+                let _ = insert_ring_ct(finalized_transaction.clone());
 
+                finalized_txs.push(Transaction::from_ringCTx(finalized_transaction));
+                //then delete the tx from the mempool
+                let _ = delete_transaction_from_mempool(ringCT.clone().hash);
+
+                // add the hash to the hashes vector
+                hashes.push(ringCT.hash);
             }
         }
     }

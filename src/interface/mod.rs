@@ -2,7 +2,7 @@ pub mod finalized_transaction;
 pub use finalized_transaction::*;
 pub mod event;
 pub mod range_proof;
-mod utxo;
+pub(crate) mod utxo;
 pub use event::*;
 pub use utxo::*;
 pub mod block;

@@ -2,7 +2,7 @@ use crate::interface::pending_transactions::PendingTransaction;
 
 // query a node api to get the last block
 pub async fn get_mempool(node_url: String) -> Result<Vec<PendingTransaction>, reqwest::Error> {
-    let url = format!("http://{}/mempool/", node_url);
+    let url = format!("http://{}/mempool", node_url);
 
     let res = reqwest::get(url).await?.text().await?;
 

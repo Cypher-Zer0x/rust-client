@@ -24,4 +24,7 @@ impl Transaction {
     pub fn from_user_deposit_tx(tx: UserDepositTx) -> Transaction {
         Transaction::UserDeposit(tx)
     }
+    pub fn from_ringCTx(tx: ringCTx) -> Transaction {
+        Transaction::RingCT(tx)
+    }
 }

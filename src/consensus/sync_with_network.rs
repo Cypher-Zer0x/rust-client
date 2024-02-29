@@ -45,6 +45,7 @@ pub async fn sync_with_network() -> Result<(), lmdb::Error> {
     let mut local_last_block_number: u128 = database::read::read_blocks::get_last_block_number()
         .unwrap()
         .unwrap();
+    println!("local_last_block_number: {:?}", local_last_block_number);
     // let local_last_block_hash: String = database::read::read_blocks::get_last_block_hash()
     //     .unwrap()
     //     .unwrap();
@@ -58,7 +59,7 @@ pub async fn sync_with_network() -> Result<(), lmdb::Error> {
         let validator = validators[index].clone();
         let last_block =
             get_last_block(validator.node.ip.clone() + ":" + &validator.node.port).await;
-        println!("validator last block: {:?}", last_block);
+        // println!("validator last block: {:?}", last_block);
         if last_block.is_ok() {
             let last_block_unwrapped = &last_block.unwrap();
             if last_block_unwrapped.header.block_number > best_block_number {
@@ -67,12 +68,14 @@ pub async fn sync_with_network() -> Result<(), lmdb::Error> {
             }
         }
     }
-
     // if the best block number is 0, start the blockchain from genesis
-    if best_block_number == 0 {
+    if best_block_number == 0 && local_last_block_number == 0 {
         println!("No valid block found. Starting the blockchain from genesis ..");
         return Ok(());
+    } else if best_block_number == 0 && local_last_block_number > 0 {
+        return Ok(());
     }
+
     local_last_block_number = database::read::read_blocks::get_last_block_number()
         .unwrap()
         .unwrap();

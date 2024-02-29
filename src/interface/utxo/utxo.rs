@@ -259,7 +259,7 @@ impl UTXO {
     // Deserialization using the prefix
     pub fn from_bytes(bytes: &[u8]) -> Result<UTXO, Box<dyn std::error::Error>> {
         let (variant, data) = bytes.split_first().ok_or("Empty bytes array")?;
-        println!("variant: {:?}", variant);
+        // println!("variant: {:?}", variant);
         let utxo = match variant {
             0 => bincode::deserialize::<UTXO>(data)?,
             1 => bincode::deserialize::<UTXO>(data)?,
