@@ -2,6 +2,7 @@ use crate::database::connection;
 use crate::interface::block::Block;
 use lmdb::Transaction as LmdbTransaction;
 use lmdb::WriteFlags;
+use chrono::{TimeZone, Utc};
 
 pub fn insert_block(
     block_hash: String,
@@ -49,8 +50,16 @@ pub fn insert_block(
     // display the block hash as hex string
     txn4.put(index_db, &key, &block_hash.as_bytes(), WriteFlags::empty())?;
     txn4.commit()?;
+
+    // Convert the Unix timestamp to a DateTime<Utc>
+    let datetime = Utc.timestamp(block.header.timestamp as i64 / 1000, 0);
+
+    // Format the DateTime<Utc> to a string (optional)
+    let date_string = datetime.format("%Y-%m-%d %H:%M:%S").to_string();
+
     println!(
-        "New Block Saved: {:?}\tBlock height: {:?}\tTx count: {:?}",
+        "<{:?}>\tNew Block: hash={:?}\tBlock height: {:?}\tTx count: {:?}",
+        date_string,
         "0x".to_owned() + &block_hash,
         binding_block_number,
         block.transactions.len()
