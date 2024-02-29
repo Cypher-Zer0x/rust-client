@@ -33,7 +33,8 @@ pub async fn handle_user_ringct(
             Err(e) => {
                 // println!("UTXO not found {:?}", e);
 
-                return Ok(Response::builder()
+            return Ok(Response::builder()
+            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .status(StatusCode::INTERNAL_SERVER_ERROR)
             .body(Body::from("Internal Server Error"))
             .unwrap())

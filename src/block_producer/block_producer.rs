@@ -1,4 +1,4 @@
-use crate::interface::{block::Block, block::BlockHeader, finalized_transaction::Transaction};
+use crate::interface::{block::Block, block::BlockHeader, finalized_transaction::Transaction, ringCTx};
 use crate::{
     database::{
         read_blocks::{get_last_block_hash, get_last_block_number},
@@ -40,6 +40,9 @@ pub fn process_transaction() -> Result<(), lmdb::Error> {
             PendingTransaction::PendingRingCTx(ring) => {
                 // we check if the input are in the database,
                 // if so we send a request to the node service to verify the validity of the signature and of the CT
+                //let _ = insert_utxo(ring.clone().outputs);
+                //let finalized_transaction : Ring = ring.clone().to_finalized_transaction();
+
             }
         }
     }

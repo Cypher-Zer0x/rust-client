@@ -8,7 +8,6 @@ pub struct PaymentUTXO {
     pub transaction_hash: String, // hash of the transaction where this UTXO was output, coinbase transactions have a hash of 0
     pub output_index: u64,        // index number of the output in the transaction
     pub public_key: String, // (compressed point) -> a one-time public key generated for this transaction output
-    pub unlock_time: Option<u64>,
     pub amount: String, // encrypted amount + blinding factor, only the owner can decrypt it (if coinbase, the amount is clear and there is no blinding factor)
     pub currency: String, // currency -> TODO: find a way to encrypt it too
     pub commitment: String, // (compressed point) -> a cryptographic commitment to the amount, allows verification without revealing the amount
@@ -23,7 +22,6 @@ struct TempPaymentUTXO {
     pub transaction_hash: String, // hash of the transaction where this UTXO was output, coinbase transactions have a hash of 0
     pub output_index: u64,        // index number of the output in the transaction
     pub public_key: String, // (compressed point) -> a one-time public key generated for this transaction output
-    pub unlock_time: Option<u64>,
     pub amount: String, // encrypted amount + blinding factor, only the owner can decrypt it (if coinbase, the amount is clear and there is no blinding factor)
     pub currency: String, // currency -> TODO: find a way to encrypt it too
     pub commitment: String, // (compressed point) -> a cryptographic commitment to the amount, allows verification without revealing the amount

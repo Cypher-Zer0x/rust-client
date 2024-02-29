@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct PendingRingCT {
     pub inputs: Vec<String>, // Ethereum address of the depositor
     pub outputs: Vec<PaymentUTXO>,
-    pub hash: String,      // hash of the UTXO// hash of the transaction
+    pub hash: String,      // hash of the hash of the transaction
     pub signature: String, // signature of the transaction
     pub fee : String // fee of the transaction 
 }
