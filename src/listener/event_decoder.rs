@@ -2,9 +2,18 @@ use crate::interface::{
     ExitClaimedEvent, ExitRequestEvent, UserDepositEvent, ValidatorAddedEvent,
     ValidatorExitRequestEvent,
 };
+use std::any::Any;
 use std::vec;
+use keccak_hash::H256;
 use web3::ethabi::{self, Error, ParamType, Token};
 use web3::types::Log;
+
+fn h256_to_string(value: Option<H256>) -> String {
+    match value {
+        Some(hash) => format!("{:x}", hash), // Convert hash to hex string
+        None => "None".to_string(),
+    }
+}
 
 /*
     this function decodes the ETHDepositCreated event
@@ -60,7 +69,7 @@ pub fn decode_eth_deposit_created_event(log: &Log) -> Result<UserDepositEvent, E
     };
 
     let user_deposit_event = UserDepositEvent {
-        txId: owner.to_string(),
+        txId: h256_to_string(log.transaction_hash),
         amount: amount.to_string(),
         currency,
         root_block_number: block_number.as_u64(),
