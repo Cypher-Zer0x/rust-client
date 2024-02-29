@@ -32,16 +32,27 @@ use axum_server::Server;
 use database::write::write_validator::insert_validator;
 use dotenv::dotenv;
 use std::env;
+use std::fs;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use serde::{Deserialize, Serialize};
 use tokio::sync::Notify;
 use tokio::time::Duration; // Add missing import statement
 
-#[tokio::main(flavor = "multi_thread", worker_threads = 3)] // Adjust the number of worker_threads as needed
+#[derive(Serialize, Deserialize, Debug)]
+struct NetworkConfig {
+    node_url: String,
+    contract_address: String,
+    chain_id: String,
+}
+
+#[tokio::main(flavor = "multi_thread")] // Adjust the number of worker_threads as needed
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // todo: at start up, check database integrity (at least if all block indexes are here and utxo merkle root fit the one saved)
     dotenv().ok();
-
+    let config_data = fs::read_to_string("network.json").expect("Unable to read network.json");
+    let networks: Vec<NetworkConfig> = serde_json::from_str(&config_data).expect("Error parsing JSON");
+    println!("{:?}", networks);
     // Setup database
     database::set_up_mldb()?;
     let node_url = env::var("WSS_PROVIDER").expect("WSS_PROVIDER not set");
@@ -67,13 +78,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let _ = get_blocks::get_blocks( "127.0.0.1:8000".to_string(),0 , 50, 10).await?;
 
     // Spawn the listener in a separate async task
-    tokio::spawn(async move {
-        let listener = EthListener::new(&node_url, &contract_address).await;
-        listener
-            .listen_to_event()
-            .await
-            .expect("Failed to listen to events");
-    });
+    for config in networks {
+        let node_url = config.node_url;
+        let contract_address = config.contract_address;
+        let chain_id = config.chain_id;
+
+        tokio::spawn(async move {
+            let listener = EthListener::new(&node_url, &contract_address, chain_id).await;
+            listener
+                .listen_to_event()
+                .await
+                .expect("Failed to listen to events");
+        });
+    }
 
     // Spawn the API server in a separate async task
     tokio::spawn(async {

@@ -14,16 +14,18 @@ use web3::{
 pub struct EthListener {
     web3: Web3<WebSocket>,
     contract_address: Address,
+    chain_id: String,
 }
 
 impl EthListener {
-    pub async fn new(node_url: &str, contract_address: &str) -> Self {
+    pub async fn new(node_url: &str, contract_address: &str, chain_id: String) -> Self {
         let transport = WebSocket::new(node_url).await.unwrap();
         let web3 = Web3::new(transport);
         let contract_address = contract_address.parse().unwrap();
         EthListener {
             web3,
             contract_address,
+            chain_id,
         }
     }
     pub async fn listen_to_event(&self) -> web3::Result<()> {
@@ -53,7 +55,7 @@ impl EthListener {
         // print!("Event signature: {:?}", event_signature_str);
         match event_signature_str {
             ref s if *s == EventSignature::DepositCreatedSignature.value() => {
-                let event = decode_eth_deposit_created_event(&log);
+                let event = decode_eth_deposit_created_event(&log, self.chain_id.clone());
                 write_mempool::insert_user_deposit_mempool(event.unwrap())
                     .await
                     .unwrap();

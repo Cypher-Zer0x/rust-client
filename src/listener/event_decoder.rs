@@ -3,7 +3,6 @@ use crate::interface::{
     ValidatorExitRequestEvent,
 };
 use keccak_hash::H256;
-use std::any::Any;
 use std::vec;
 use web3::ethabi::{self, Error, ParamType, Token};
 use web3::types::Log;
@@ -26,7 +25,10 @@ fn h256_to_string(value: Option<H256>) -> String {
         string rG // random point used to create the commitment in the privacy layer
         );
 */
-pub fn decode_eth_deposit_created_event(log: &Log) -> Result<UserDepositEvent, Error> {
+pub fn decode_eth_deposit_created_event(
+    log: &Log,
+    chain_id: String,
+) -> Result<UserDepositEvent, Error> {
     // Define the parameter types of the ETHDepositCreated event
     let param_types = vec![
         ParamType::Address,   // owner
@@ -66,7 +68,7 @@ pub fn decode_eth_deposit_created_event(log: &Log) -> Result<UserDepositEvent, E
         amount: amount.to_string(),
         currency,
         root_block_number: block_number.as_u64(),
-        root_blockchain: "ETH".to_string(),
+        root_blockchain: chain_id,
         public_key,
         r_g,
     };

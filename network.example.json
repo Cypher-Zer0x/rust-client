@@ -1,0 +1,8 @@
+[
+    {
+      "node_url": "Your node wss url",
+      "contract_address": "contract address",
+      "chain_id": "chain id"
+    }
+    // add more networks here
+]
