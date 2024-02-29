@@ -105,7 +105,7 @@ pub async fn handle_user_ringct(
             // Correctly construct the JSON response
             Ok(Response::builder()
                 .status(StatusCode::OK)
-                .header("Access-Control-Allow-Origin", "*") // Correct header name should be in quotes
+                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*") // Correct header name should be in quotes
                 .body(Body::from(data.to_string())) // Serialize the `data` directly to a JSON string
                 .unwrap()) // Assuming you want to unwrap here, but consider handling errors more gracefully
         },
@@ -113,7 +113,7 @@ pub async fn handle_user_ringct(
             eprintln!("Error inserting transaction in mempool: {:?}", e);
             Ok(Response::builder()
                 .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .header("Access-Control-Allow-Origin", "*")
+                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                 .body(Body::from(format!("{{\"error\":\"{}\"}}", e))) // Provide a JSON-formatted error message
                 .unwrap()) // Again, consider a more graceful error handling
         }
