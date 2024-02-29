@@ -3,10 +3,15 @@ use crate::database::write_mempool::insert_transaction_in_mempool;
 use crate::interface::{PendingRingCT, PendingTransaction, VerifyTx, UTXO};
 use axum::{http::StatusCode, response::Json};
 use serde_json::{json, Value};
-
+use axum::response::Response;
+use axum::{
+    body::Body,
+    http::{header::ACCESS_CONTROL_ALLOW_ORIGIN},
+};
+use std::convert::Infallible;
 pub async fn handle_user_ringct(
     payload: Json<PendingRingCT>,
-) -> Result<Json<serde_json::Value>, StatusCode> {
+) -> Result<Response,Infallible> {
     //println!("Received a ringCT transaction {:?}", payload);
 
     let tx = PendingRingCT {
@@ -28,7 +33,10 @@ pub async fn handle_user_ringct(
             Err(e) => {
                 // println!("UTXO not found {:?}", e);
 
-                return Err(StatusCode::BAD_REQUEST);
+                return Ok(Response::builder()
+            .status(StatusCode::INTERNAL_SERVER_ERROR)
+            .body(Body::from("Internal Server Error"))
+            .unwrap())
             }
         }
     }
@@ -56,37 +64,58 @@ pub async fn handle_user_ringct(
                     } else {
                         // println!("Transaction is invalid.");
 
-                        return Err(StatusCode::BAD_REQUEST);
+                        return Ok(Response::builder()
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(Body::from("Internal Server Error"))
+                        .unwrap()); 
                     }
                 }
                 Err(err) => {
                     eprintln!("Failed to parse JSON response: {}", err);
-                    return Err(StatusCode::BAD_REQUEST);
+                    return Ok(Response::builder()
+                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                    .body(Body::from("Internal Server Error"))
+                    .unwrap());
                 }
             }
         } else {
             eprintln!("Server returned an error: {:?}", res.status());
-            return Err(StatusCode::BAD_REQUEST);
+            return Ok(Response::builder()
+            .status(StatusCode::INTERNAL_SERVER_ERROR)
+            .body(Body::from("Internal Server Error"))
+            .unwrap());
         }
     } else {
         // Handle network errors or other issues while sending the request.
         eprintln!("Error during the request");
-        return Err(StatusCode::BAD_REQUEST);
+        return Ok(Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(Body::from("Internal Server Error"))
+        .unwrap());
     }
 
     // if the signature is valid, we send the transaction to the mempool
     match insert_transaction_in_mempool(PendingTransaction::PendingRingCTx(tx.clone())) {
         Ok(_) => {
-            return Ok(Json(json!(
-                {
-                    "status": "success",
-                    "message": "Handled ringCT transaction"
-                }
-            )));
-        }
+            let data = json!({
+                "status": "success",
+                "message": "Handled ringCT transaction"
+            });
+            
+            // Correctly construct the JSON response
+            Ok(Response::builder()
+                .status(StatusCode::OK)
+                .header("Access-Control-Allow-Origin", "*") // Correct header name should be in quotes
+                .body(Body::from(data.to_string())) // Serialize the `data` directly to a JSON string
+                .unwrap()) // Assuming you want to unwrap here, but consider handling errors more gracefully
+        },
         Err(e) => {
             eprintln!("Error inserting transaction in mempool: {:?}", e);
-            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+            Ok(Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .header("Access-Control-Allow-Origin", "*")
+                .body(Body::from(format!("{{\"error\":\"{}\"}}", e))) // Provide a JSON-formatted error message
+                .unwrap()) // Again, consider a more graceful error handling
         }
     }
 }
