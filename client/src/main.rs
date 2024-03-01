@@ -135,25 +135,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .layer(CorsLayer::permissive()); 
         let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
         println!("API server listening on {}", addr);
-        // Spawn the block producer in a separate async task
-        tokio::spawn(async {
-            loop {
-                tokio::time::sleep(Duration::from_secs(10)).await;
-                let _ = process_transaction();
-            }
-        });
-        // state diff prover/poster logic here, commented out for now
-        /*tokio::spawn(async {
-            loop {
-                tokio::time::sleep(Duration::from_secs(1)).await;
-                let _ = run_prover().await;
-            }
-        });*/
         // Run the server
         Server::bind(addr)
             .serve(app.into_make_service())
             .await
             .unwrap();
+    });
+    // Spawn the block producer in a separate async task
+    tokio::spawn(async {
+        loop {
+            tokio::time::sleep(Duration::from_secs(10)).await;
+            let _ = process_transaction();
+        }
+    });
+    // state diff prover/poster logic here, commented out for now
+    tokio::spawn(async {
+        loop {
+            tokio::time::sleep(Duration::from_secs(1)).await;
+            let _ = run_prover().await;
+        }
     });
     notify.notified().await;
     Ok(())

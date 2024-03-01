@@ -39,7 +39,7 @@ pub async fn async_get_last_state_proven() -> Result<Response, Infallible> {
 // this function returns all the transactions in the mempool
 pub fn get_last_block() -> Result<serde_json::Value, lmdb::Error> {
     let data = get_last_block_proven().unwrap();
-    let json = serde_json::to_value(data).unwrap();
+    let json = serde_json::to_value(data.to_string()).unwrap();
     Ok(json)
 }
 

@@ -192,8 +192,10 @@ async fn prove_state_diff(
 pub async fn run_prover() -> Result<(), Box<dyn Error>> {
     // Default to 0 for the last proven block if it's not found
     let last_block_proven = read_blocks::get_last_block_proven().unwrap_or(0);
+    println!("Last block proven: {}", last_block_proven.clone());
     // Default to an empty string for the last state proven if it's not found
-    let last_state_proven = read_blocks::get_last_state_proven().unwrap_or_default(); // `unwrap_or_default` defaults to an empty string for String type
+    let last_state_proven = read_blocks::get_last_state_proven().unwrap_or_default();  // `unwrap_or_default` defaults to an empty string for String type
+    println!("Last state proven: {}", last_state_proven.clone());
     // Get the last block number, handling errors
     let last_block_number = match read_blocks::get_last_block_number() {
         Ok(Some(number)) => number,
@@ -224,7 +226,7 @@ pub async fn run_prover() -> Result<(), Box<dyn Error>> {
     }
     // If necessary, update the state in the database or perform additional steps here
     write_state::insert_last_state_proven(state_t_1.clone())?;
-    write_state::insert_last_block_proven(last_block_number.clone())?;
+    write_state::insert_last_block_proven(last_block_number.clone().to_string())?;
     println!("Prover run completed successfully");
     println!("Last state proven: {}", state_t_1);
     println!("Last block proven: {}", last_block_number);
