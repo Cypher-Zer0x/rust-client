@@ -4,3 +4,4 @@ methods/guest/Cargo.lock
 target/
 .env
 receipt.txt
+lmdb_database/
