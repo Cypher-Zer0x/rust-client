@@ -37,6 +37,7 @@ pub fn set_up_mldb() -> Result<(), Box<dyn std::error::Error>> {
     create_db(&env, "Mempool")?;
     create_db(&env, "Index")?; // block indexes mapped to block hashes
     create_db(&env, "Validators")?;
+    create_db(&env, "State")?;
 
     // if last block is none, insert genesis block in the database
     if let Ok(None) = get_last_block_hash() {

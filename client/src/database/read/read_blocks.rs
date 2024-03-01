@@ -54,7 +54,10 @@ pub fn get_last_block_number() -> Result<Option<u128>, lmdb::Error> {
         Err(e) => Err(e),                          // Propagate other errors
     }
 }
-
+fn sort_blocks(mut blocks: Vec<Block>) -> Vec<Block> {
+    blocks.sort_by(|a, b| a.header.block_number.cmp(&b.header.block_number));
+    blocks
+}
 // this function returns all the blocks
 pub fn get_blocks() -> Result<Vec<Block>, lmdb::Error> {
     let env = create_or_open_env().unwrap();
@@ -76,7 +79,7 @@ pub fn get_blocks() -> Result<Vec<Block>, lmdb::Error> {
         }
     }
     txn.commit()?;
-    Ok(data)
+    Ok(sort_blocks(data))
 }
 
 // this function returns a block by its hash
@@ -92,10 +95,6 @@ pub fn get_block_by_hash(block_hash: String) -> Result<Block, lmdb::Error> {
 
 // this function returns a block by its number
 pub fn get_block_by_number(block_number: u128) -> Result<Block, lmdb::Error> {
-    //first we get the hash by getting the into the index table
-
-    // println!("Getting block by number: {:?}", block_number);
-
     let env = create_or_open_env().unwrap();
     let db = open_database(&env, Some("Index"))?;
     let txn = env.begin_ro_txn().unwrap();
@@ -129,4 +128,37 @@ pub fn get_number_of_block() -> Result<u128, lmdb::Error> {
     }
     // -2 because we have the last block hash and the last block number in the db
     Ok(count - 2)
+}
+
+pub fn get_last_state_proven() -> Result<String, lmdb::Error> {
+    let env = create_or_open_env().unwrap();
+    let db = open_database(&env, Some("State"))?;
+    let txn = env.begin_ro_txn()?;
+    let key = "last_state_proven".as_bytes();
+    match txn.get(db, &key) {
+        Ok(value) => {
+            let value_str = String::from_utf8(value.to_vec()).map_err(|_| lmdb::Error::NotFound)?;
+            Ok(value_str)
+        }
+        Err(lmdb::Error::NotFound) => Ok("".to_string()), // Specifically handle not found as a valid case
+        Err(e) => Err(e),                    // Propagate other errors
+    }
+}
+
+pub fn get_last_block_proven() -> Result<u128, lmdb::Error> {
+    let env = create_or_open_env().unwrap();
+    let db = open_database(&env, Some("State"))?;
+    let txn = env.begin_ro_txn()?;
+    let key = "last_block_proven".as_bytes();
+    match txn.get(db, &key) {
+        Ok(value) => {
+            let value_str = String::from_utf8(value.to_vec()).map_err(|_| lmdb::Error::NotFound)?;
+            let value = value_str
+                .parse::<u128>()
+                .map_err(|_| lmdb::Error::NotFound)?;
+            Ok(value)
+        }
+        Err(lmdb::Error::NotFound) => Ok(0), // Specifically handle not found as a valid case
+        Err(e) => Err(e),                    // Propagate other errors
+    }
 }
