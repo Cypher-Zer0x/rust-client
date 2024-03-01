@@ -129,7 +129,10 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
                 "message": "Handled ringCT transaction"
             });
             // println!("mempool after: {:?}", get_mempool().unwrap());
-
+            // remove the inputs from the UTXO set
+            for input in tx.inputs.clone() {
+                let _ = remove_utxo(input);
+            }
             // Correctly construct the JSON response
             Ok(Response::builder()
                 .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*") // Correct header name should be in quotes
