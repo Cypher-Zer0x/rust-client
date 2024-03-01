@@ -143,12 +143,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         });
         // state diff prover/poster logic here, commented out for now
-        tokio::spawn(async {
+        /*tokio::spawn(async {
             loop {
                 tokio::time::sleep(Duration::from_secs(1)).await;
                 let _ = run_prover().await;
             }
-        });
+        });*/
         // Run the server
         Server::bind(addr)
             .serve(app.into_make_service())
