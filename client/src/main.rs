@@ -99,9 +99,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Spawn the API server in a separate async task
     tokio::spawn(async {
         let cors = CorsLayer::new()
+        .allow_origin(Any)
         .allow_methods([Method::GET,Method::POST,Method::OPTIONS]) // Specify allowed methods, including OPTIONS
-        .allow_headers([CONTENT_TYPE,ACCESS_CONTROL_ALLOW_HEADERS]) // Specify allowed headers
-        .allow_credentials(true);
+        .allow_headers([CONTENT_TYPE,ACCESS_CONTROL_ALLOW_HEADERS]);  // Specify allowed headers
         let app = Router::new()
             /* ----------------------METRICS ENDPOINTS----------------- */
             .route("/metrics", get(async_get_blockchain_metrics))
@@ -132,7 +132,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .route("/state/block/current", get(async_get_last_block_proven))
             /* ----------------------USER OPERATION ENDPOINTS---------------------- */
             .route("/ringct", post(handle_user_ringct))
-            .layer(cors);
+            .layer(CorsLayer::permissive()); 
         let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
         println!("API server listening on {}", addr);
         // Spawn the block producer in a separate async task
