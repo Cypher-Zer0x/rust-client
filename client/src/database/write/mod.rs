@@ -8,3 +8,5 @@ pub use write_transaction::*;
 pub use write_utxo::*;
 pub use write_validator::*;
 pub mod write_validator;
+pub mod write_state;
+pub use write_state::*;

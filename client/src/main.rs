@@ -37,7 +37,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::sync::Notify;
 use tokio::time::Duration; // Add missing import statement
-use prover_poster::prove_state_diff;
+use prover_poster::run_prover;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct NetworkConfig {
@@ -132,17 +132,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         });
         // state diff prover/poster logic here, commented out for now
-        /*tokio::spawn(async {
+        tokio::spawn(async {
             loop {
                 tokio::time::sleep(Duration::from_secs(1)).await;
-                let _ = prove_state_diff(
-                    "0x123".to_string(),
-                    "0x456".to_string(),
-                    vec!["0x789".to_string(), "0x101112".to_string()],
-                )
-                .await;
+                let _ = run_prover().await;
             }
-        });*/
+        });
         // Run the server
         Server::bind(addr)
             .serve(app.into_make_service())

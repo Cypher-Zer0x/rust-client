@@ -7,8 +7,11 @@ use ethers::providers::{Http, Provider};
 use host::{run_bonsai, run_stark2snark};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use crate::database::read_blocks;
+use eth_merkle_tree::tree::MerkleTree;
+use std::error::Error;
 
+use crate::database::read_blocks;
+use crate::database::write_state;
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Inputs {
     pub state_t_1: String, // merkle root of the state at t+1 (all the blocks)
@@ -71,7 +74,7 @@ pub async fn verify_on_chain(
     let contract_abi: Abi = serde_json::from_str(contract_abi)?;
     let contract = Contract::new(contract_address, contract_abi, provider);
 
-    /*let a0_bytes: [u8; 32] = snark_receipt.snark.a[0]
+    let a0_bytes: [u8; 32] = snark_receipt.snark.a[0]
         .clone()
         .try_into()
         .expect("Incorrect length for a0");
@@ -118,9 +121,9 @@ pub async fn verify_on_chain(
     let signal4_bytes: [u8; 32] = snark_receipt.snark.public[3]
         .clone()
         .try_into()
-        .expect("Incorrect length for signal4");*/
+        .expect("Incorrect length for signal4");
 
-    /*let a0 = U256::from(a0_bytes);
+    let a0 = U256::from(a0_bytes);
     let a1 = U256::from(a1_bytes);
     let b0 = U256::from(b0_bytes);
     let b1 = U256::from(b1_bytes);
@@ -131,43 +134,8 @@ pub async fn verify_on_chain(
     let signal1 = U256::from(signal1_bytes);
     let signal2 = U256::from(signal2_bytes);
     let signal3 = U256::from(signal3_bytes);
-    let signal4 = U256::from(signal4_bytes);*/
-    let a0 = U256::from_dec_str(
-        "9353649055001880451080369704879234343695026832373588152132355360449099814546",
-    )
-    .unwrap();
-    let a1 = U256::from_dec_str(
-        "6729718291741893553752757969774236388825948635082864656308585754431928423613",
-    )
-    .unwrap();
-    let b0 = U256::from_dec_str(
-        "10100653844049400855849050942094150368687454072879057546672969278423914793132",
-    )
-    .unwrap();
-    let b1 = U256::from_dec_str(
-        "13852281614479540232749139335805886622297829428827842772028759807664000000017",
-    )
-    .unwrap();
-    let b2 = U256::from_dec_str(
-        "14928493194307259659339531132063615201325939983689767244400030895764937334456",
-    )
-    .unwrap();
-    let b3 = U256::from_dec_str(
-        "20426008889232999290603480685613319778066435678866093591521561933134727893090",
-    )
-    .unwrap();
-    let c0 = U256::from_dec_str(
-        "13434088454671199877700923759645577138696837482808791274640989609436245133155",
-    )
-    .unwrap();
-    let c1 = U256::from_dec_str(
-        "16125521847031103002036015866222073309858247907722720156658871028125288432326",
-    )
-    .unwrap();
-    let signal1 = U256::from_dec_str("91039097843120449453449593822342807849").unwrap();
-    let signal2 = U256::from_dec_str("24946934259622365010039737625873252857").unwrap();
-    let signal3 = U256::from_dec_str("303471869684994866908490898589058140899").unwrap();
-    let signal4 = U256::from_dec_str("304204416563610904192848645937720932675").unwrap();
+    let signal4 = U256::from(signal4_bytes);
+   
     // Call the contract's function
     match contract
         .method::<(
@@ -193,16 +161,16 @@ pub async fn verify_on_chain(
     Ok(())
 }
 
-pub async fn prove_state_diff(
+async fn prove_state_diff(
     state_t_1: String,
     state_t: String,
-    block_hash: Vec<String>,
+    blocks_hash: Vec<String>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // Assuming `Inputs` and `to_bytes()` are defined elsewhere and are non-blocking
     let input = Inputs {
-        state_t_1: "0x123".to_string(),
-        state_t: "0x456".to_string(),
-        blocks_hash: vec!["0x789".to_string(), "0x101112".to_string()],
+        state_t_1,
+        state_t,
+        blocks_hash,
     };
     let input_data = input.to_bytes();
 
@@ -221,20 +189,53 @@ pub async fn prove_state_diff(
     Ok(())
 }
 
-/*fn get_data_for_state_diff(){
-    //first we get the last block
-    let last_block = read_blocks::get_last_block();
-    //we get the last block number when the state has been proven
-    let last_block_proven = read_blocks::get_last_block_proven();
-    //we get the last state proven
-    let last_state_proven = read_blocks::get_last_state_proven();
+pub async fn run_prover() -> Result<(), Box<dyn Error>> {
+    // Default to 0 for the last proven block if it's not found
+    let last_block_proven = read_blocks::get_last_block_proven().unwrap_or(0);
+    // Default to an empty string for the last state proven if it's not found
+    let last_state_proven = read_blocks::get_last_state_proven().unwrap_or_default(); // `unwrap_or_default` defaults to an empty string for String type
+    // Get the last block number, handling errors
+    let last_block_number = match read_blocks::get_last_block_number() {
+        Ok(Some(number)) => number,
+        Ok(None) => {
+            // It's expected that there might be no blocks at the very beginning, so handle accordingly
+            // This could mean initializing the system or waiting for blocks to be created
+            0 // Assuming 0 to indicate no blocks are yet available, adjust as needed
+        },
+        Err(e) => return Err(e.into()),
+    };
+    let mut state_data = vec![last_state_proven.clone()];
+    let mut blocks_hash = Vec::new();
+    // Even for the first run or when data is missing, proceed without error
+    for block_num in last_block_proven..last_block_number {
+        let block = match read_blocks::get_block_by_number(block_num) {
+            Ok(block) => block,
+            Err(e) => return Err(e.into()),
+        };
+        state_data.push(block.hash.clone());
+        blocks_hash.push(block.hash);
+    }
+    // Compute the Merkle root
+    let state_t_1 = get_merkle_root(state_data);
+    // Call prove_state_diff with the necessary data
+    if let Err(e) = prove_state_diff(state_t_1.clone(), last_state_proven, blocks_hash).await {
+        // Handle errors from prove_state_diff, but continue the process
+        return Err(e);
+    }
+    // If necessary, update the state in the database or perform additional steps here
+    write_state::insert_last_state_proven(state_t_1.clone())?;
+    write_state::insert_last_block_proven(last_block_number.clone())?;
+    println!("Prover run completed successfully");
+    println!("Last state proven: {}", state_t_1);
+    println!("Last block proven: {}", last_block_number);
+    Ok(())
+}
 
-    // then we get the merkle root of the state t+1
-    let state_t_1 = read_blocks::get_state_merkle_root(last_block_proven);
-
-    // then we get the hash of each block between t and t+1
-    let blocks_hash = read_blocks::get_blocks_hash(last_block_proven, last_block);
-    // then we call the prove_state_diff function
-    prove_state_diff(state_t_1, last_state_proven, blocks_hash);
-    // if the state is proven we update the state in the database
-}*/
+fn get_merkle_root(hashes: Vec<String>) -> String {
+    if hashes.is_empty() {
+        return "".to_string();
+    }
+    let tree = MerkleTree::new(&hashes).expect("Tree creation error.");
+    let root = tree.root.expect("Unable to access root");
+    root.data
+}

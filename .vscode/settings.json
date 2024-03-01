@@ -37,6 +37,7 @@
         "./client/Cargo.toml",
         "./host/Cargo.toml",
         "./host/Cargo.toml",
+        "./client/Cargo.toml",
         "./client/Cargo.toml"
     ]
 }
