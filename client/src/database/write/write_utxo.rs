@@ -3,7 +3,6 @@ use crate::interface::PaymentUTXO;
 use crate::interface::UTXO;
 use lmdb::Transaction as LmdbTransaction;
 use lmdb::WriteFlags;
-use crate::database::remove_utxo;
 
 pub fn insert_utxo(utxo: UTXO) -> Result<(), lmdb::Error> {
     let env = connection::create_or_open_env().unwrap();

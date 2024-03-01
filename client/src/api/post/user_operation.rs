@@ -7,6 +7,8 @@ use axum::{body::Body, http::header::ACCESS_CONTROL_ALLOW_ORIGIN};
 use axum::{http::StatusCode, response::Json};
 use serde_json::{json, Value};
 use std::convert::Infallible;
+use crate::database::remove_utxo;
+
 
 pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response, Infallible> {
     //println!("Received a ringCT transaction {:?}", payload);
