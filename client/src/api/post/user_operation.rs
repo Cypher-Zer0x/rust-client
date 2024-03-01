@@ -57,7 +57,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
                 // println!("UTXO not found {:?}", e);
 
                 return Ok(Response::builder()
-                    .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                    // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                     .status(StatusCode::INTERNAL_SERVER_ERROR)
                     .body(Body::from("Internal Server Error"))
                     .unwrap());
@@ -91,7 +91,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
                         // println!("Transaction is invalid.");
 
                         return Ok(Response::builder()
-                            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                            // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                             .status(StatusCode::INTERNAL_SERVER_ERROR)
                             .body(Body::from("Internal Server Error"))
                             .unwrap());
@@ -100,7 +100,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
                 Err(err) => {
                     eprintln!("Failed to parse JSON response: {}", err);
                     return Ok(Response::builder()
-                        .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                        // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                         .status(StatusCode::INTERNAL_SERVER_ERROR)
                         .body(Body::from("Internal Server Error"))
                         .unwrap());
@@ -109,7 +109,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
         } else {
             eprintln!("Server returned an error: {:?}", res.status());
             return Ok(Response::builder()
-                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                 .status(StatusCode::INTERNAL_SERVER_ERROR)
                 .body(Body::from("Internal Server Error"))
                 .unwrap());
@@ -118,7 +118,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
         // Handle network errors or other issues while sending the request.
         eprintln!("Error during the request");
         return Ok(Response::builder()
-            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .status(StatusCode::INTERNAL_SERVER_ERROR)
             .body(Body::from("Internal Server Error"))
             .unwrap());
@@ -137,7 +137,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
             }
             // Correctly construct the JSON response
             Ok(Response::builder()
-                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*") // Correct header name should be in quotes
+                // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*") // Correct header name should be in quotes
                 .status(StatusCode::OK)
                 .body(Body::from(data.to_string())) // Serialize the `data` directly to a JSON string
                 .unwrap()) // Assuming you want to unwrap here, but consider handling errors more gracefully
@@ -146,7 +146,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
             eprintln!("Error inserting transaction in mempool: {:?}", e);
             Ok(Response::builder()
                 .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                // .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                 .body(Body::from(format!("{{\"error\":\"{}\"}}", e))) // Provide a JSON-formatted error message
                 .unwrap()) // Again, consider a more graceful error handling
         }
