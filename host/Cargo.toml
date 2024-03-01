@@ -16,5 +16,8 @@ petgraph = "0.6.4"
 tiny-keccak = "2.0.2"
 bonsai-sdk = "0.6.1"
 bytemuck = "1.14.3"
+ethers = "2.0.13"
 alloy-primitives = { version = "0.6", default-features = false, features = ["rlp", "serde", "std"] }
 alloy-sol-types = { version = "0.6" }
+alloy-core = "0.6.4"
+tokio = "1.36.0"

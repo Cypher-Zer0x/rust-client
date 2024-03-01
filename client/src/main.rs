@@ -4,14 +4,13 @@ mod consensus;
 mod database;
 mod interface;
 mod listener;
-use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, Any, CorsLayer};
+mod prover_poster;
 
 use api::get::block_data::{
     async_get_block_by_hash_data, async_get_block_by_number_data, async_get_blocks_data,
     async_get_blocks_range_data, async_get_last_block_data, async_get_last_ten_blocks_data,
     async_get_number_block,
 };
-
 use api::get::blockchain_metrics::async_get_blockchain_metrics;
 use api::get::mempool_data::async_get_mempool_data;
 use api::get::transactions_data::{
@@ -22,15 +21,15 @@ use api::get::utxo_data::{async_get_utxo_data, async_get_utxo_data_by_hash};
 use api::post::user_operation::handle_user_ringct;
 use block_producer::block_producer::process_transaction;
 use consensus::sync_with_network::sync_with_network;
+use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, Any, CorsLayer};
 //use consensus::user_operationocks;
-use interface::nodes::{Node, Validator};
-use listener::eth_listener::EthListener;
-
 use api::requester::get_block_range::get_block_range;
 use axum::{routing::get, routing::post, Router}; // Ensure this is correctly imported
 use axum_server::Server;
 use database::write::write_validator::insert_validator;
 use dotenv::dotenv;
+use interface::nodes::{Node, Validator};
+use listener::eth_listener::EthListener;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
@@ -38,6 +37,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::sync::Notify;
 use tokio::time::Duration; // Add missing import statement
+use prover_poster::prove_state_diff;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct NetworkConfig {
@@ -131,6 +131,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let _ = process_transaction();
             }
         });
+        // state diff prover/poster logic here, commented out for now
+        /*tokio::spawn(async {
+            loop {
+                tokio::time::sleep(Duration::from_secs(1)).await;
+                let _ = prove_state_diff(
+                    "0x123".to_string(),
+                    "0x456".to_string(),
+                    vec!["0x789".to_string(), "0x101112".to_string()],
+                )
+                .await;
+            }
+        });*/
         // Run the server
         Server::bind(addr)
             .serve(app.into_make_service())

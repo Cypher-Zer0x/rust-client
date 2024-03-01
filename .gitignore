@@ -5,3 +5,4 @@ target/
 .env
 receipt.txt
 lmdb_database/
+network.json
