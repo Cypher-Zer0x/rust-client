@@ -7,6 +7,7 @@ use ethers::providers::{Http, Provider};
 use host::{run_bonsai, run_stark2snark};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use crate::database::read_blocks;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Inputs {
@@ -219,3 +220,21 @@ pub async fn prove_state_diff(
     verify_on_chain(snark_data?).await.expect("Failed to verify on chain");
     Ok(())
 }
+
+/*fn get_data_for_state_diff(){
+    //first we get the last block
+    let last_block = read_blocks::get_last_block();
+    //we get the last block number when the state has been proven
+    let last_block_proven = read_blocks::get_last_block_proven();
+    //we get the last state proven
+    let last_state_proven = read_blocks::get_last_state_proven();
+
+    // then we get the merkle root of the state t+1
+    let state_t_1 = read_blocks::get_state_merkle_root(last_block_proven);
+
+    // then we get the hash of each block between t and t+1
+    let blocks_hash = read_blocks::get_blocks_hash(last_block_proven, last_block);
+    // then we call the prove_state_diff function
+    prove_state_diff(state_t_1, last_state_proven, blocks_hash);
+    // if the state is proven we update the state in the database
+}*/
