@@ -17,10 +17,13 @@ use api::get::transactions_data::{
     async_get_latest_ten_tx, async_get_number_tx, async_get_transaction_data,
     async_get_transaction_data_by_hash,
 };
+use api::get::state::{async_get_last_block_proven, async_get_last_state_proven};
 use api::get::utxo_data::{async_get_utxo_data, async_get_utxo_data_by_hash};
 use api::post::user_operation::handle_user_ringct;
 use block_producer::block_producer::process_transaction;
 use consensus::sync_with_network::sync_with_network;
+use http::header::{ACCESS_CONTROL_ALLOW_HEADERS, CONTENT_TYPE};
+use http::Method;
 use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, Any, CorsLayer};
 //use consensus::user_operationocks;
 use api::requester::get_block_range::get_block_range;
@@ -95,6 +98,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Spawn the API server in a separate async task
     tokio::spawn(async {
+        let cors = CorsLayer::new()
+        .allow_methods([Method::GET,Method::POST,Method::OPTIONS]) // Specify allowed methods, including OPTIONS
+        .allow_headers([CONTENT_TYPE,ACCESS_CONTROL_ALLOW_HEADERS]) // Specify allowed headers
+        .allow_credentials(true);
         let app = Router::new()
             /* ----------------------METRICS ENDPOINTS----------------- */
             .route("/metrics", get(async_get_blockchain_metrics))
@@ -120,8 +127,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .route("/block/latest", get(async_get_last_block_data))
             .route("/block/latest-ten", get(async_get_last_ten_blocks_data))
             .route("/block/total-number", get(async_get_number_block))
+            /*-----------------------STATE ENDPOINTS----------------------- */
+            .route("/state/current", get(async_get_last_state_proven))
+            .route("/state/block/current", get(async_get_last_block_proven))
             /* ----------------------USER OPERATION ENDPOINTS---------------------- */
-            .route("/ringct", post(handle_user_ringct));
+            .route("/ringct", post(handle_user_ringct))
+            .layer(cors);
         let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
         println!("API server listening on {}", addr);
         // Spawn the block producer in a separate async task

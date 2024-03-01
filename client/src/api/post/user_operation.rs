@@ -132,7 +132,7 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
             // Correctly construct the JSON response
             Ok(Response::builder()
                 .status(StatusCode::OK)
-                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*") // Correct header name should be in quotes
+                .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                 .body(Body::from(data.to_string())) // Serialize the `data` directly to a JSON string
                 .unwrap()) // Assuming you want to unwrap here, but consider handling errors more gracefully
         }
