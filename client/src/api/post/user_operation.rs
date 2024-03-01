@@ -7,6 +7,9 @@ use axum::{body::Body, http::header::ACCESS_CONTROL_ALLOW_ORIGIN};
 use axum::{http::StatusCode, response::Json};
 use serde_json::{json, Value};
 use std::convert::Infallible;
+use crate::database::remove_utxo;
+
+
 pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response, Infallible> {
     //println!("Received a ringCT transaction {:?}", payload);
     // println!("mempool before: {:?}", get_mempool().unwrap());
@@ -128,9 +131,13 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
                 "message": "Handled ringCT transaction"
             });
             // println!("mempool after: {:?}", get_mempool().unwrap());
-
+            // remove the inputs from the UTXO set
+            for input in tx.inputs.clone() {
+                let _ = remove_utxo(input);
+            }
             // Correctly construct the JSON response
             Ok(Response::builder()
+
                 .status(StatusCode::OK)
                 .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                 .body(Body::from(data.to_string())) // Serialize the `data` directly to a JSON string
