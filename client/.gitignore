@@ -1,0 +1,6 @@
+/target
+.vscode
+.env
+/lmdb_database
+network.json
+.mdb

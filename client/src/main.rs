@@ -56,8 +56,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?}", networks);
     // Setup database
     database::set_up_mldb()?;
-    let node_url = env::var("WSS_PROVIDER").expect("WSS_PROVIDER not set");
-    let contract_address = env::var("CONTRACT_ADDRESS").expect("CONTRACT_ADDRESS not set");
+    /*let node_url = env::var("WSS_PROVIDER").expect("WSS_PROVIDER not set");
+    let contract_address = env::var("CONTRACT_ADDRESS").expect("CONTRACT_ADDRESS not set");*/
     let notify = Arc::new(Notify::new());
 
     // first we try to sync with the network

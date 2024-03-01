@@ -1,0 +1,12 @@
+[
+    {
+      "node_url": "wss://eth-sepolia.g.alchemy.com/v2/UHvNom6QYnztugUMd_ulcZgsvcEz5F3I",
+      "contract_address": "0x260f85e4fc779cE33dCb6Ca3fa675815A31E6224",
+      "chain_id": "11155111"
+    },
+    {
+        "node_url": "wss://testnet.aurora.dev",
+        "contract_address": "0x1FAddB9466B1bDF7Ea88280fF8A61138f6e8BC03",
+        "chain_id": "1313161555"
+      }
+]

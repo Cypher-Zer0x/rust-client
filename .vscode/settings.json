@@ -1,0 +1,26 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./src/prover/methods/guest/Cargo.toml",
+        "./src/prover/host/Cargo.toml",
+        "./src/proover/host/Cargo.toml",
+        "./src/proover/methods/Cargo.toml",
+        "./Cargo.toml",
+        "./prover/methods/Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./Cargo.toml",
+        "./host/Cargo.toml",
+        "./host/Cargo.toml",
+        "./client/Cargo.toml",
+        "./client/Cargo.toml"
+    ]
+}
