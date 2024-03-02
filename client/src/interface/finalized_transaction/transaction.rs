@@ -8,18 +8,29 @@ pub enum Transaction {
 
 impl Transaction {
     pub fn from_bytes(bytes: &[u8]) -> Result<Transaction, Box<dyn std::error::Error>> {
-        let tx: Transaction = bincode::deserialize(bytes)?;
-        Ok(tx)
+        let (variant, data) = bytes.split_first().ok_or("Empty bytes array")?;
+        // println!("variant: {:?}", variant);
+        let utxo = match variant {
+            0 => bincode::deserialize::<Transaction>(data)?,
+            1 => bincode::deserialize::<Transaction>(data)?,
+            _ => return Err("Unknown UTXO variant".into()),
+        };
+        Ok(utxo)
+    }
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        match self {
+            &Transaction::UserDeposit(_) => bytes.push(0),
+            &Transaction::RingCT(_) => bytes.push(1),
+        }
+        bytes.extend(bincode::serialize(self).unwrap());
+        bytes
     }
     pub fn get_transaction_type(&self) -> String {
         match self {
             Transaction::UserDeposit(_) => "UserDeposit".to_string(),
             Transaction::RingCT(_) => "RingCT".to_string(),
         }
-    }
-    pub fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-        let encoded = bincode::serialize(&self)?;
-        Ok(encoded)
     }
     pub fn from_user_deposit_tx(tx: UserDepositTx) -> Transaction {
         Transaction::UserDeposit(tx)
