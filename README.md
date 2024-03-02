@@ -37,3 +37,116 @@ Welcome to the official repository of the Cypher-Zer0x Plasma Rollup Client, a h
   ```bash
   cargo run --release
   ```
+
+## Available API routes :  
+### Metrics Endpoints
+
+#### /metrics
+- *Method:* GET
+- *Description:* Fetches blockchain metrics.
+- *Usage:* Used to get an overview of the blockchain's current metrics.
+
+### Transaction (TX) Endpoints
+
+#### /mempool
+- *Method:* GET
+- *Description:* Retrieves data about the current state of the mempool.
+- *Usage:* Useful for understanding the pending transactions waiting to be confirmed.
+
+#### /utxo/set
+- *Method:* GET
+- *Description:* Fetches the set of UTXOs.
+- *Usage:* Enables querying of unspent transaction outputs, essential for transaction processing and wallet balance calculations.
+
+#### /utxo/hash/:hash
+- *Method:* GET
+- *Description:* Retrieves UTXO data by its hash.
+- *Parameters:*
+  - hash: The hash of the UTXO.
+- *Usage:* Used for looking up specific UTXO details by hash.
+
+#### /transaction/all
+- *Method:* GET
+- *Description:* Fetches data for all transactions.
+- *Note:* Consider adding a range mechanism to improve efficiency.
+- *Usage:* Allows retrieval of comprehensive transaction data, which may become inefficient without a range mechanism.
+
+#### /transaction/hash/:tx_hash
+- *Method:* GET
+- *Description:* Retrieves transaction data by its hash.
+- *Parameters:*
+  - tx_hash: The hash of the transaction.
+- *Usage:* Useful for querying specific transactions directly.
+
+#### /transaction/number
+- *Method:* GET
+- *Description:* Fetches the number of transactions.
+- *Usage:* Provides a count of all transactions processed.
+
+#### /transaction/latest-ten
+- *Method:* GET
+- *Description:* Retrieves the latest ten transactions.
+- *Usage:* Offers a quick overview of the most recent transactions.
+
+### Block Endpoints
+
+#### /block/all
+- *Method:* GET
+- *Description:* Fetches data for all blocks.
+- *Note:* Consider adding a range mechanism to improve efficiency.
+- *Usage:* Enables retrieval of all block data, which may become slow and inefficient without a range mechanism.
+
+#### /block/hash/:block_hash
+- *Method:* GET
+- *Description:* Retrieves block data by its hash.
+- *Parameters:*
+  - block_hash: The hash of the block.
+- *Usage:* Allows for querying specific blocks directly.
+
+#### /block/number/:block_number
+- *Method:* GET
+- *Description:* Fetches block data by block number.
+- *Parameters:*
+  - block_number: The number of the block.
+- *Usage:* Useful for retrieving blocks based on their height in the blockchain.
+
+#### /block/range/:rangeData
+- *Method:* GET
+- *Description:* Retrieves a range of blocks.
+- *Parameters:*
+  - rangeData: Specifies the range of blocks to retrieve.
+- *Usage:* Facilitates the retrieval of blocks within a specific range.
+
+#### /block/latest
+- *Method:* GET
+- *Description:* Fetches the latest block data.
+- *Usage:* Provides data on the most recently mined or produced block.
+
+#### /block/latest-ten
+- *Method:* GET
+- *Description:* Retrieves the latest ten blocks.
+- *Usage:* Offers a snapshot of the ten most recent blocks.
+
+#### /block/total-number
+- *Method:* GET
+- *Description:* Fetches the total number of blocks.
+- *Usage:* Gives the total count of blocks in the blockchain.
+
+### State Endpoints
+
+#### /state/current
+- *Method:* GET
+- *Description:* Fetches the last proven state of the network.
+- *Usage:* Gives the last proven state as a merkle root of block hash.
+
+#### /state/block/current
+- *Method:* GET
+- *Description:* Fetches the last proven block number of the network.
+- *Usage:* Gives the last proven block number.
+
+### User Operation Endpoints
+
+#### /ringct
+- *Method:* POST
+- *Description:* Handles RingCT (Ring Confidential Transactions) operations.
+- *Usage:* Enables users to perform RingCT transactions, enhancing privacy by concealing the amount transferred.
