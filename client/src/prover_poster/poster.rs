@@ -146,7 +146,7 @@ pub async fn verify_on_chain(
         let signal2 = U256::from(signal2_bytes);
         let signal3 = U256::from(signal3_bytes);
         let signal4 = U256::from(signal4_bytes);
-        if chain_id == "51" || chain_id == "1313161555" || chain_id == "23295" {
+        if chain_id == "51" || chain_id == "1313161555" || chain_id == "23295" || chain_id == "296" {
             let gas_price = provider.get_gas_price().await?;
             match contract
                 .method::<(
