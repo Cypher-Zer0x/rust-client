@@ -24,12 +24,16 @@ pub fn set_up_mldb() -> Result<(), Box<dyn std::error::Error>> {
             )
         })?;
     }
-    let env = Environment::new().set_max_dbs(7).open(path).map_err(|e| {
-        io::Error::new(
-            io::ErrorKind::Other,
-            format!("Failed to open LMDB environment: {}", e),
-        )
-    })?;
+    let env = Environment::new()
+        .set_max_dbs(7)
+        .set_mapsize(10 * 1024 * 1024 * 1024) // Set database size to 10GB
+        .open(path)
+        .map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::Other,
+                format!("Failed to open LMDB environment: {}", e),
+            )
+        })?;
     // More robust database creation with error handling
     create_db(&env, "UTXO")?;
     create_db(&env, "Transactions")?;
