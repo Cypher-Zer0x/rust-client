@@ -26,7 +26,7 @@ pub fn set_up_mldb() -> Result<(), Box<dyn std::error::Error>> {
     }
     let env = Environment::new()
         .set_max_dbs(7)
-        .set_mapsize(10 * 1024 * 1024 * 1024) // Set database size to 10GB
+        .set_map_size(10 * 1024 * 1024 * 1024) // Set database size to 10GB
         .open(path)
         .map_err(|e| {
             io::Error::new(
