@@ -25,12 +25,16 @@ pub fn get_transactions() -> Result<Vec<Transaction>, lmdb::Error> {
 // this function returns a transaction by its hash
 pub fn get_transaction_by_hash(tx_hash: String) -> Result<Transaction, lmdb::Error> {
     let env = create_or_open_env().unwrap();
-    let db = open_database(&env, Some("Transactions")).unwrap();
-    let txn = env.begin_ro_txn().unwrap();
+    let db = open_database(&env, Some("Transactions"))?;
+    let txn = env.begin_ro_txn()?;
     let key = tx_hash.as_bytes();
-    let value = txn.get(db, &key).unwrap();
-    let transaction = Transaction::from_bytes(value);
-    Ok(transaction.unwrap())
+    match txn.get(db, &key) {
+        Ok(value) => {
+            let transaction = Transaction::from_bytes(value);
+            Ok(transaction.unwrap())
+        }// Specifically handle not found as a valid case
+        Err(e) => Err(e),                       // Propagate other errors
+    }
 }
 
 pub fn get_number_tx() -> Result<u128, lmdb::Error> {
