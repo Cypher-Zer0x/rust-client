@@ -38,4 +38,11 @@ impl Transaction {
     pub fn from_ringCTx(tx: ringCTx) -> Transaction {
         Transaction::RingCT(tx)
     }
+
+    pub fn get_hash(&self) -> String {
+        match self {
+            Transaction::UserDeposit(tx) => tx.hash.clone(),
+            Transaction::RingCT(tx) => tx.hash.clone(),
+        }
+    }
 }

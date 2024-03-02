@@ -1,4 +1,4 @@
-use crate::database::insert_ring_ct;
+use crate::database::{insert_ring_ct, insert_transaction};
 use crate::interface;
 use crate::interface::{
     block::Block, block::BlockHeader, finalized_transaction::Transaction, ringCTx,
@@ -34,9 +34,9 @@ pub fn process_transaction() -> Result<(), lmdb::Error> {
                 let _ = insert_utxo(deposit_tx.clone().output);
                 // then add the tx to the transaction database, and to the vector of finalized txs
                 let finalized_transaction =
-                    UserDepositTx::from_pending_user_deposit_tx(deposit_tx.clone());
-                let _ = insert_user_deposit_tx(finalized_transaction.clone());
-                finalized_txs.push(Transaction::from_user_deposit_tx(finalized_transaction));
+                    Transaction::from_user_deposit_tx(UserDepositTx::from_pending_user_deposit_tx(deposit_tx.clone()));
+                let _ = insert_transaction(finalized_transaction.clone());
+                finalized_txs.push(finalized_transaction);
                 //then delete the tx from the mempool
                 let _ = delete_transaction_from_mempool(deposit_tx.clone().hash);
                 // add the hash to the hashes vector
@@ -50,10 +50,10 @@ pub fn process_transaction() -> Result<(), lmdb::Error> {
                     let _ = insert_utxo(interface::utxo::utxo::UTXO::Payment(output.clone()));
                 }
                 // then add the tx to the transaction database, and to the vector of finalized txs
-                let finalized_transaction: ringCTx = ringCTx::from_pending_ringCTx(ringCT.clone());
-                let _ = insert_ring_ct(finalized_transaction.clone());
+                let finalized_transaction = Transaction::from_ringCTx(ringCTx::from_pending_ringCTx(ringCT.clone()));
+                let _ = insert_transaction(finalized_transaction.clone());
 
-                finalized_txs.push(Transaction::from_ringCTx(finalized_transaction));
+                finalized_txs.push(finalized_transaction);
                 //then delete the tx from the mempool
                 let _ = delete_transaction_from_mempool(ringCT.clone().hash);
 

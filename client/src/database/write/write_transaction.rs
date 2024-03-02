@@ -39,3 +39,21 @@ pub fn insert_ring_ct(ring_ct: ringCTx) -> Result<(), lmdb::Error> {
 
     Ok(())
 }
+
+pub fn insert_transaction(tx: Transaction) -> Result<(), lmdb::Error> {
+    let env = connection::create_or_open_env().unwrap();
+    let db = connection::open_database(&env, Some("Transactions"))?;
+    let binding_env = env;
+    let mut txn = binding_env.begin_rw_txn()?;
+    txn.put(
+        db,
+        &tx.get_hash().as_bytes(),
+        &tx.to_bytes(),
+        WriteFlags::empty(),
+    )?;
+    txn.commit()?;
+
+    // println!("Transaction written successfully.");
+
+    Ok(())
+}
