@@ -12,7 +12,7 @@ pub fn insert_user_deposit_tx(user_deposit_tx: UserDepositTx) -> Result<(), lmdb
     txn.put(
         db,
         &user_deposit_tx.hash.as_bytes(),
-        &tx.to_bytes().unwrap(),
+        &tx.to_bytes(),
         WriteFlags::empty(),
     )?;
     txn.commit()?;
