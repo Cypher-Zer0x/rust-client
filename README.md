@@ -20,6 +20,7 @@ Welcome to the official repository of the Cypher-Zer0x Plasma Rollup Client, a h
 
 - Rust toolchain (latest stable version recommended)
 - LMDB installed on your system
+- A Bonsai API key, you can request access [here](https://docs.google.com/forms/d/e/1FAIpQLSf9mu18V65862GS4PLYd7tFTEKrl90J5GTyzw_d14ASxrruFQ/viewform)
 
 ### Installation
 
