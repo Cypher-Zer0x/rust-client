@@ -30,10 +30,10 @@ Welcome to the official repository of the Cypher-Zer0x Plasma Rollup Client, a h
 2. Set up your env variables
 3. Set up your network.json
 4. Build the client:
-```bash
-cargo build --release
-````
+  ```bash
+  cargo build --release
+  ````
 5. Run the client:
-```bash
-cargo run --release
-```
+  ```bash
+  cargo run --release
+  ```
