@@ -1,4 +1,4 @@
-use crate::database::read_state::{get_last_state_proven, get_last_block_proven};
+use crate::database::read_state::{get_last_block_proven, get_last_state_proven};
 use axum::response::Response;
 use axum::{
     body::Body,

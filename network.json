@@ -1,12 +1,46 @@
 [
-    {
-      "node_url": "wss://eth-sepolia.g.alchemy.com/v2/UHvNom6QYnztugUMd_ulcZgsvcEz5F3I",
-      "contract_address": "0x260f85e4fc779cE33dCb6Ca3fa675815A31E6224",
-      "chain_id": "11155111"
-    },
-    {
-        "node_url": "wss://testnet.aurora.dev",
-        "contract_address": "0x1FAddB9466B1bDF7Ea88280fF8A61138f6e8BC03",
-        "chain_id": "1313161555"
-      }
+  {
+    "node_url": "wss://eth-sepolia.g.alchemy.com/v2/UHvNom6QYnztugUMd_ulcZgsvcEz5F3I",
+    "contract_address": "0x1615a8F59b176B9b9B49140B7d750c0808a3509B",
+    "chain_id": "11155111",
+    "node_url_http":"https://eth-sepolia.g.alchemy.com/v2/UHvNom6QYnztugUMd_ulcZgsvcEz5F3I"
+  },
+  {
+    "node_url": "wss://ws.apothem.network",
+    "contract_address": "0xcbe5f301853d365c0B311AB331f56AAC0d39d6b0",
+    "chain_id": "51",
+    "node_url_http":"https://apothem.xdcrpc.com"
+  },
+  {
+    "node_url":"wss://polygon-mumbai.g.alchemy.com/v2/v-lt_Yr1mwfKJ1VPFX2q5roU7zProC0q",
+    "contract_address":"0xDafC82b2F91C43222C7e64F3E2c6b006E84acc16",
+    "chain_id":"80001",
+    "node_url_http":"https://polygon-mumbai.g.alchemy.com/v2/v-lt_Yr1mwfKJ1VPFX2q5roU7zProC0q"
+  },
+  {
+    "node_url": "wss://testnet.aurora.dev",
+    "contract_address": "0xcbe5f301853d365c0B311AB331f56AAC0d39d6b0",
+    "chain_id": "1313161555",
+    "node_url_http":"https://testnet.aurora.dev"
+
+},
+{
+  "node_url": "wss://testnet.sapphire.oasis.dev/ws",
+  "contract_address": "0xcbe5f301853d365c0B311AB331f56AAC0d39d6b0",
+  "chain_id": "23295",
+  "node_url_http":"https://testnet.sapphire.oasis.dev"
+
+},
+{
+  "node_url": "wss://linea-goerli.infura.io/ws/v3/03900d3ae94d4882a1ecfec7f530a312",
+  "contract_address": "0xcbe5f301853d365c0B311AB331f56AAC0d39d6b0",
+  "chain_id": "59140",
+  "node_url_http":"https://linea-goerli.infura.io/v3/03900d3ae94d4882a1ecfec7f530a312"
+},
+{
+  "node_url": "wss://ws-zircuit1.p2pify.com",
+  "contract_address": "0xcbe5f301853d365c0B311AB331f56AAC0d39d6b0",
+  "chain_id": "48899",
+  "node_url_http":"https://zircuit1.p2pify.com/"
+}
 ]

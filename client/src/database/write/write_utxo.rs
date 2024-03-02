@@ -1,5 +1,4 @@
 use crate::database::connection;
-use crate::interface::PaymentUTXO;
 use crate::interface::UTXO;
 use lmdb::Transaction as LmdbTransaction;
 use lmdb::WriteFlags;

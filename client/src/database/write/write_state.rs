@@ -1,12 +1,8 @@
 use crate::database::connection;
-use crate::interface::block::Block;
-use chrono::{TimeZone, Utc};
 use lmdb::Transaction as LmdbTransaction;
 use lmdb::WriteFlags;
 
-pub fn insert_last_state_proven(
-    state_t_1: String,
-) -> Result<(), lmdb::Error> {
+pub fn insert_last_state_proven(state_t_1: String) -> Result<(), lmdb::Error> {
     let env = connection::create_or_open_env().unwrap();
     let db = connection::open_database(&env, Some("State"))?;
     let binding_env = env;
@@ -18,10 +14,7 @@ pub fn insert_last_state_proven(
     Ok(())
 }
 
-
-pub fn insert_last_block_proven(
-    block_number: String,
-) -> Result<(), lmdb::Error> {
+pub fn insert_last_block_proven(block_number: String) -> Result<(), lmdb::Error> {
     let env = connection::create_or_open_env().unwrap();
     let db = connection::open_database(&env, Some("State"))?;
     let binding_env = env;

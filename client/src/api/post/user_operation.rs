@@ -1,5 +1,6 @@
 use crate::database::read_mempool::get_mempool;
 use crate::database::read_utxo::get_utxo_by_hash;
+use crate::database::remove_utxo;
 use crate::database::write_mempool::insert_transaction_in_mempool;
 use crate::interface::{PendingRingCT, PendingTransaction, VerifyTx, UTXO};
 use axum::response::Response;
@@ -7,8 +8,6 @@ use axum::{body::Body, http::header::ACCESS_CONTROL_ALLOW_ORIGIN};
 use axum::{http::StatusCode, response::Json};
 use serde_json::{json, Value};
 use std::convert::Infallible;
-use crate::database::remove_utxo;
-
 
 pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response, Infallible> {
     //println!("Received a ringCT transaction {:?}", payload);
@@ -23,7 +22,6 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
     };
     // we check if the input exists in the database
     // and store the UTXO in a vector
-    /*
     if tx.inputs.len() == 0{
         return Ok(Response::builder()
         .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
@@ -45,7 +43,6 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
         .body(Body::from("Internal Server Error"))
         .unwrap());
     }
-    */
     let mut inputs_utxo: Vec<String> = Vec::new();
     for input in tx.inputs.clone() {
         match get_utxo_by_hash(input) {
@@ -137,7 +134,6 @@ pub async fn handle_user_ringct(payload: Json<PendingRingCT>) -> Result<Response
             }
             // Correctly construct the JSON response
             Ok(Response::builder()
-
                 .status(StatusCode::OK)
                 .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
                 .body(Body::from(data.to_string())) // Serialize the `data` directly to a JSON string

@@ -13,11 +13,11 @@ use api::get::block_data::{
 };
 use api::get::blockchain_metrics::async_get_blockchain_metrics;
 use api::get::mempool_data::async_get_mempool_data;
+use api::get::state::{async_get_last_block_proven, async_get_last_state_proven};
 use api::get::transactions_data::{
     async_get_latest_ten_tx, async_get_number_tx, async_get_transaction_data,
     async_get_transaction_data_by_hash,
 };
-use api::get::state::{async_get_last_block_proven, async_get_last_state_proven};
 use api::get::utxo_data::{async_get_utxo_data, async_get_utxo_data_by_hash};
 use api::post::user_operation::handle_user_ringct;
 use block_producer::block_producer::process_transaction;
@@ -33,6 +33,7 @@ use database::write::write_validator::insert_validator;
 use dotenv::dotenv;
 use interface::nodes::{Node, Validator};
 use listener::eth_listener::EthListener;
+use prover_poster::run_prover;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
@@ -40,11 +41,11 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::sync::Notify;
 use tokio::time::Duration; // Add missing import statement
-use prover_poster::run_prover;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct NetworkConfig {
     node_url: String,
+    node_url_http: String,
     contract_address: String,
     chain_id: String,
 }
@@ -98,10 +99,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Spawn the API server in a separate async task
     tokio::spawn(async {
-        let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods([Method::GET,Method::POST,Method::OPTIONS]) // Specify allowed methods, including OPTIONS
-        .allow_headers([CONTENT_TYPE,ACCESS_CONTROL_ALLOW_HEADERS]);  // Specify allowed headers
         let app = Router::new()
             /* ----------------------METRICS ENDPOINTS----------------- */
             .route("/metrics", get(async_get_blockchain_metrics))
@@ -132,7 +129,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .route("/state/block/current", get(async_get_last_block_proven))
             /* ----------------------USER OPERATION ENDPOINTS---------------------- */
             .route("/ringct", post(handle_user_ringct))
-            .layer(CorsLayer::permissive()); 
+            .layer(CorsLayer::permissive());
         let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
         println!("API server listening on {}", addr);
         // Run the server

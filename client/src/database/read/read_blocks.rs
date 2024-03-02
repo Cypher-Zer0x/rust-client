@@ -141,7 +141,7 @@ pub fn get_last_state_proven() -> Result<String, lmdb::Error> {
             Ok(value_str)
         }
         Err(lmdb::Error::NotFound) => Ok("".to_string()), // Specifically handle not found as a valid case
-        Err(e) => Err(e),                    // Propagate other errors
+        Err(e) => Err(e),                                 // Propagate other errors
     }
 }
 
