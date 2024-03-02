@@ -25,7 +25,7 @@ pub fn get_utxo_by_hash(hash: String) -> Result<UTXO, lmdb::Error> {
     let db = open_database(&env, Some("UTXO")).unwrap();
     let txn = env.begin_ro_txn().unwrap();
     let key = hash.as_bytes();
-    println!("hash: {:?}", hash);
+    // println!("hash: {:?}", hash);
     let value = txn.get(db, &key).unwrap();
     let utxo = UTXO::from_bytes(value);
     Ok(utxo.unwrap())
