@@ -273,7 +273,7 @@ pub async fn run_prover() -> Result<(), Box<dyn Error>> {
     write_state::insert_last_block_proven(last_block_number.clone().to_string())?;
 
     // Convert the Unix timestamp to a DateTime<Utc>
-    let datetime = Utc.timestamp(block.header.timestamp as i64 / 1000, 0);
+    let datetime = Utc::now();
 
     // Format the DateTime<Utc> to a string (optional)
     let date_string = datetime.format("%Y-%m-%d %H:%M:%S").to_string();

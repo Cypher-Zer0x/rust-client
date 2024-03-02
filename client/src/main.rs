@@ -54,6 +54,8 @@ struct NetworkConfig {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // todo: at start up, check database integrity (at least if all block indexes are here and utxo merkle root fit the one saved)
     dotenv().ok();
+
+    // println!("\t   ____                   _                       _____                 ___         \t  / ___|  _   _   _ __   | |__     ___   _ __    |__  /   ___   _ __   / _ \\  __  __\n\t | |     | | | | | '_ \\  | '_ \\   / _ \\ | '__|     / /   / _ \\ | '__| | | | | \ \/ /\n\t | |___  | |_| | | |_) | | | | | |  __/ | |       / /_  |  __/ | |    | |_| |  >  < \n\t  \____|  \__, | | .__/  |_| |_|  \___| |_|      /____|  \___| |_|     \___/  /_/\_\\n\t          |___/  |_|                                                                ")
     let config_data = fs::read_to_string("network.json").expect("Unable to read network.json");
     let networks: Vec<NetworkConfig> =
         serde_json::from_str(&config_data).expect("Error parsing JSON");
