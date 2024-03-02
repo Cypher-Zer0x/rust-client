@@ -29,7 +29,9 @@ pub fn get_transaction_by_hash(tx_hash: String) -> Result<Transaction, lmdb::Err
     let txn = env.begin_ro_txn().unwrap();
     let key = tx_hash.as_bytes();
     let value = txn.get(db, &key).unwrap();
+    println!("value: {:?}", value);
     let transaction = Transaction::from_bytes(value);
+    txn.commit()?; 
     Ok(transaction.unwrap())
 }
 
