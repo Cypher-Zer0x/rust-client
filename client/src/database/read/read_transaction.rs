@@ -24,18 +24,57 @@ pub fn get_transactions() -> Result<Vec<Transaction>, lmdb::Error> {
 
 // this function returns a transaction by its hash
 pub fn get_transaction_by_hash(tx_hash: String) -> Result<Transaction, lmdb::Error> {
-    let env = create_or_open_env().unwrap();
-    let db = open_database(&env, Some("Transactions"))?;
-    let txn = env.begin_ro_txn()?;
+    println!("Attempting to get transaction by hash: {}", tx_hash);
+
+    let env_result = create_or_open_env();
+
+    match &env_result {
+        Ok(env) => println!("Environment successfully opened."),
+        Err(e) => println!("Failed to open environment: {:?}", e),
+    }
+    let env = env_result.unwrap(); // Assuming you handle unwrap better in production
+
+    let db_result = open_database(&env, Some("Transactions"));
+    match db_result {
+        Ok(_) => println!("Database successfully opened."),
+        Err(e) => println!("Failed to open database: {:?}", e),
+    }
+    let db = db_result?;
+
+    let txn_result = env.begin_ro_txn();
+    match txn_result {
+        Ok(_) => println!("Read-only transaction successfully begun."),
+        Err(e) => println!("Failed to begin read-only transaction: {:?}", e),
+    }
+    let txn = txn_result?;
+
     let key = tx_hash.as_bytes();
     match txn.get(db, &key) {
         Ok(value) => {
+            println!("Transaction found for hash: {}", tx_hash);
             let transaction = Transaction::from_bytes(value);
-            Ok(transaction.unwrap())
-        }// Specifically handle not found as a valid case
-        Err(e) => Err(e),                       // Propagate other errors
+            match transaction {
+                Ok(t) => {
+                    println!("Transaction deserialized successfully.");
+                    Ok(t)
+                },
+                Err(e) => {
+                    println!("Failed to deserialize transaction: {:?}", e);
+                    Err(lmdb::Error::Other(12)) // Adjust according to your error handling
+                }
+            }
+        },
+        Err(e) => {
+            if e == lmdb::Error::NotFound {
+                println!("Transaction not found for hash: {}", tx_hash);
+            } else {
+                println!("Error retrieving transaction: {:?}", e);
+            }
+            Err(e)
+        },
     }
 }
+
 
 pub fn get_number_tx() -> Result<u128, lmdb::Error> {
     // Attempt to create or open the environment, propagating any errors
